@@ -41,4 +41,8 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-/data/
+/data/**.csv
+/data/**.txt
+/data/emnist_source_files/
+
+
