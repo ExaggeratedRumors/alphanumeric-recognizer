@@ -12,12 +12,12 @@ object DataLoader {
         val data: List<DoubleArray>
     )
 
-    fun loadLabelData(filePath: String): List<IntArray> {
+    fun loadLabelData(filePath: String, size: Int = Int.MAX_VALUE): List<IntArray> {
         val buffer: ByteBuffer = ByteBuffer
             .wrap(File(filePath).readBytes())
             .order(ByteOrder.BIG_ENDIAN)
             .also { it.int }
-        val labelsAmount: Int = buffer.int
+        val labelsAmount: Int = buffer.int.coerceAtMost(size)
         val labels = IntArray(labelsAmount)
         labels.indices.forEach {
             try {
@@ -37,14 +37,14 @@ object DataLoader {
         }
     }
 
-    fun loadImageData(filePath: String): ImageSetMetadata {
+    fun loadImageData(filePath: String, size: Int = Int.MAX_VALUE): ImageSetMetadata {
         val buffer: ByteBuffer = ByteBuffer
             .wrap(File(filePath).readBytes())
             .order(ByteOrder.BIG_ENDIAN)
             .also { it.int }
 
 
-        val imagesAmount = buffer.int
+        val imagesAmount = buffer.int.coerceAtMost(size)
         val rows = buffer.int
         val columns = buffer.int
         val imageSize = rows * columns
