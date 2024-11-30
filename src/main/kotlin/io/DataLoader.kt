@@ -5,7 +5,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 object DataLoader {
-    data class ImageSetMetadata(
+    data class ImageSetData(
         val amount: Int,
         val rows: Int,
         val columns: Int,
@@ -37,7 +37,7 @@ object DataLoader {
         }
     }
 
-    fun loadImageData(filePath: String, size: Int = Int.MAX_VALUE): ImageSetMetadata {
+    fun loadImageData(filePath: String, size: Int = Int.MAX_VALUE): ImageSetData {
         val buffer: ByteBuffer = ByteBuffer
             .wrap(File(filePath).readBytes())
             .order(ByteOrder.BIG_ENDIAN)
@@ -63,7 +63,7 @@ object DataLoader {
             }
         }.toList()
 
-        return ImageSetMetadata(
+        return ImageSetData(
             amount = imagesAmount,
             rows = rows,
             columns = columns,
