@@ -1,5 +1,7 @@
 package com.ertools
 
-fun main() {
+import com.ertools.io.DataLoader
 
+fun main() {
+    val data = DataLoader.loadImageData("data/emnist_source_files/emnist-balanced-train-images-idx3-ubyte")
 }
