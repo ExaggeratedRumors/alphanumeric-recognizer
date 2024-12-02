@@ -1,5 +1,7 @@
 package com.ertools.model
 
+import com.ertools.common.Matrix
+
 class Dense(
     neurons: Int,
     activationFunction: (DoubleArray) -> (DoubleArray)
@@ -14,5 +16,9 @@ class Dense(
 
     override fun response(input: Array<Double>): Array<Double> {
         TODO("Not yet implemented")
+    }
+
+    override fun error(input: Array<Double>): Array<Double> {
+        TODO()
     }
 }

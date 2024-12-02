@@ -19,6 +19,11 @@ class Conv(
             .applyActivationFunction()
     }
 
+    override fun error(input: Matrix): Matrix {
+        TODO()
+    }
+
+
     fun loadFilters(filters: Matrix) {
         this.filters = filters
     }

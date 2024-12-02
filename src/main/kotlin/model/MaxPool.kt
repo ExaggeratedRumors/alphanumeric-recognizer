@@ -40,4 +40,8 @@ class MaxPool(
             }.toTypedArray()
         }.toTypedArray().toMatrix()
     }
+
+    override fun error(input: Matrix): Matrix {
+        TODO()
+    }
 }
