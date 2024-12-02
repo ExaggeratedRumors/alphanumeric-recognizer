@@ -4,13 +4,21 @@ package com.ertools.common
 class Matrix(
     val rows: Int,
     val columns: Int,
-    val initalizer: (Int) -> (Double) = { 0.0 }
+    private val initalizer: (Int) -> (Double) = { 0.0 }
 ) {
+    companion object {
+        fun Array<Array<Double>>.toMatrix(): Matrix {
+            val rows = this.size
+            val columns = this[0].size
+            val matrixData = this
+            return Matrix(rows, columns).apply { this.data = matrixData }
+        }
+    }
+
     var data: Array<Array<Double>> = Array(rows) { Array(columns) { initalizer.invoke(it) } }
 
-    fun flatten(): Vector {
-        val flattenData = data.flatten().toTypedArray()
-        return Vector(flattenData.size).apply { this.data = flattenData }
+    fun flatten(): Array<Double> {
+        return data.flatten().toTypedArray()
     }
 
     fun applyPadding(padding: Int): Matrix {
@@ -22,9 +30,7 @@ class Matrix(
                 paddedArray[padding + row][column + padding] = this.data[row][column]
             }
         }
-        return Matrix(rows, columns).apply {
-            this.data = paddedArray
-        }
+        return paddedArray.toMatrix()
     }
 
     fun dot(rightMatrix: Matrix): Matrix {
@@ -37,9 +43,7 @@ class Matrix(
                 }
             }
         }
-        return Matrix(this.rows, rightMatrix.columns).apply {
-            this.data = result
-        }
+        return result.toMatrix()
     }
 
     fun transpose(): Matrix {
@@ -49,23 +53,18 @@ class Matrix(
                 result[j][i] = this.data[i][j]
             }
         }
-        return Matrix(columns, rows).apply {
-            this.data = result
-        }
+        return result.toMatrix()
     }
 
 
     fun slice(rowIndices: IntRange, colIndices: IntRange): Matrix {
         require(rowIndices.first >= 0 && rowIndices.last < rows) { "Invalid row indices" }
         require(colIndices.first >= 0 && colIndices.last < columns) { "Invalid column indices" }
-        val newMatrixData = rowIndices.map { rowIndex ->
+        val result = rowIndices.map { rowIndex ->
             colIndices.map { colIndex ->
                 this.data[rowIndex][colIndex]
             }.toTypedArray()
         }.toTypedArray()
-        return Matrix(rowIndices.count(), colIndices.count()).apply {
-            this.data = newMatrixData
-        }
+        return result.toMatrix()
     }
 }
-

@@ -1,7 +1,5 @@
 package com.ertools.model
 
-import com.ertools.common.Vector
-
 class Dense(
     neurons: Int,
     activationFunction: (DoubleArray) -> (DoubleArray)

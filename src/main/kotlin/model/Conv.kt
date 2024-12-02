@@ -1,19 +1,22 @@
 package com.ertools.model
 
 import com.ertools.common.Matrix
-import com.ertools.common.Vector
+import com.ertools.common.Matrix.Companion.toMatrix
 
 class Conv(
-    val filtersAmount: Int,
-    val kernel: Int = 3,
-    val stride: Int = 1,
-    val padding: Int = 0,
-    val activationFunction: (DoubleArray) -> (DoubleArray)
+    private val filtersAmount: Int,
+    private val kernel: Int = 3,
+    private val stride: Int = 1,
+    private val padding: Int = 0,
+    private val activationFunction: (Array<Double>) -> (Array<Double>)
 ): Layer<Matrix> {
     private var filters: Matrix = Matrix(filtersAmount, kernel * kernel) { 1.0 }
 
     override fun response(input: Matrix): Matrix {
-        return input.applyPadding(padding).convolution()
+        return input
+            .applyPadding(padding)
+            .convolution()
+            .applyActivationFunction()
     }
 
     fun loadFilters(filters: Matrix) {
@@ -23,24 +26,29 @@ class Conv(
     /*************/
     /** Private **/
     /*************/
-    private fun Matrix.convolution(): Matrix {
-        val vectorizedImage = mutableListOf<Vector>()
-        (0..this.rows step stride).forEach { row ->
-            (0..this.columns step stride).forEach { column ->
-                val vector = this.slice(IntRange(row, row + kernel), IntRange(column, column + kernel)).flatten()
-                vectorizedImage.add(vector)
+
+    /**
+     * Vectorize image by filter through kernel including stride and flatten it.
+     */
+    private fun Matrix.convolution(): Matrix =
+        (0 until this.rows step stride).map { row ->
+            (0 until this.columns step stride).map { column ->
+                this.vectorize(row, column)
             }
         }
+        .flatten()
+        .toTypedArray()
+        .toMatrix()
+        .dot(filters.transpose())
 
-        val matrix = Matrix(
-            rows = vectorizedImage.size,
-            columns = vectorizedImage[0].size,
-        ).apply {
-            this.data = Array(rows) { row ->
-                vectorizedImage[row].data
-            }
-        }
+    private fun Matrix.vectorize(rowIndex: Int, columnIndex: Int): Array<Double> =
+        this.slice(
+            IntRange(rowIndex, rowIndex + kernel),
+            IntRange(columnIndex, columnIndex + kernel)
+        ).flatten()
 
-        return matrix.dot(filters.transpose())
-    }
+    private fun Matrix.applyActivationFunction(): Matrix =
+        this.data.map {
+            activationFunction.invoke(it)
+        }.toTypedArray().toMatrix()
 }

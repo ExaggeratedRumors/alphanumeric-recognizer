@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Test
 
 
-class TestConv {
+class TestMatrix {
 
     @Test
     fun `applyPadding adds correct padding to the matrix`() {
