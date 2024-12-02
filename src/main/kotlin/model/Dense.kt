@@ -1,9 +1,11 @@
 package com.ertools.model
 
+import com.ertools.common.Vector
+
 class Dense(
     neurons: Int,
     activationFunction: (DoubleArray) -> (DoubleArray)
-): Layer {
+): Layer<Vector> {
     private var weights: Array<DoubleArray> = Array(neurons) {
         DoubleArray(0)
     }
@@ -12,7 +14,7 @@ class Dense(
         this.weights = weights
     }
 
-    override fun response(input: List<Double>): List<Double> {
+    override fun response(input: Vector): Vector {
         TODO("Not yet implemented")
     }
 }

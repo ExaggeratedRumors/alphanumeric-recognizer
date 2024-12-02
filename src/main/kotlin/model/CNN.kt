@@ -9,5 +9,7 @@ class CNN(
     /** Privates **/
     /**************/
 
-
+    private fun flatten(data2d: Array<DoubleArray>): DoubleArray {
+        return data2d.map { it.toTypedArray() }.toTypedArray().flatten().toDoubleArray()
+    }
 }

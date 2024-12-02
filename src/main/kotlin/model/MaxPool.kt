@@ -1,12 +1,14 @@
 package com.ertools.model
 
-class MaxPool(
-    poolSize: Int,
-    padding: Int,
-    stride: Int
-): Layer {
+import com.ertools.common.Matrix
 
-    override fun response(input: List<Double>): List<Double> {
+class MaxPool(
+    poolSize: Int = 2,
+    stride: Int = 2,
+    padding: Int = 0
+): Layer<Matrix> {
+
+    override fun response(input: Matrix): Matrix {
         TODO("Not yet implemented")
     }
 }
