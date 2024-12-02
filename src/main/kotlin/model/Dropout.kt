@@ -2,8 +2,8 @@ package com.ertools.model
 
 class Dropout(
     factor: Double
-): Layer<Vector> {
-    override fun response(input: Vector): Vector {
+): Layer<Array<Double>> {
+    override fun response(input: Array<Double>): Array<Double> {
         TODO("Not yet implemented")
     }
 }
