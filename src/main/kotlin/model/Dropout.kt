@@ -13,7 +13,7 @@ class Dropout(
         TODO("Not yet implemented")
     }
 
-    override fun error(input: Array<Double>): Array<Double> {
+    override fun mseError(input: Array<Double>): Array<Double> {
         TODO()
     }
 }

@@ -29,7 +29,7 @@ class TestDense {
         val expectedVector = arrayOf(0.0, 1.0)
         val diff = responseVector.zip(expectedVector).map { it.first - it.second }.toTypedArray()
         val dense = Dense(2)
-        val error = dense.error(diff)
+        val error = dense.mseError(diff)
         val expectedError = arrayOf(1.8555, -1.1375)
         expectedError.forEachIndexed { i, _ ->
             assertEquals(expectedError[i], error[i], 0.0001)

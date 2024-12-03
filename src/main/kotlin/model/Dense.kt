@@ -2,7 +2,6 @@ package com.ertools.model
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
-import com.ertools.model.ActivationFunction.linear
 
 class Dense(
     private val neurons: Int,
@@ -21,7 +20,7 @@ class Dense(
         return activationFunction(resultVector)
     }
 
-    override fun error(input: Array<Double>): Array<Double> {
+    override fun mseError(input: Array<Double>): Array<Double> {
         return input.map { 2 * it / neurons }.toTypedArray()
     }
 
