@@ -2,11 +2,12 @@ package com.ertools.model
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
+import com.ertools.model.ActivationFunction.linear
 
 class Dense(
     private val neurons: Int,
-    private val activationFunction: (Array<Double>) -> (Array<Double>),
-    private val weightsInitializer: () -> (Double)
+    private val activationFunction: (Array<Double>) -> (Array<Double>) = { it },
+    private val weightsInitializer: () -> (Double) = { 0.0 }
 ): Layer<Array<Double>, Array<Double>>(neurons) {
     private lateinit var weights: Matrix
 
