@@ -46,6 +46,17 @@ class Matrix(
         return result.toMatrix()
     }
 
+    fun dot(rightVector: Array<Double>): Array<Double> {
+        require(this.columns == rightVector.size) { "Invalid matrix dimensions" }
+        val result = Array(this.rows) { 0.0 }
+        (0 until this.rows).forEach { i ->
+            (0 until this.columns).forEach { j ->
+                result[i] += this.data[i][j] * rightVector[j]
+            }
+        }
+        return result
+    }
+
     fun transpose(): Matrix {
         val result = Array(columns) { Array(rows) { 0.0 } }
         (0 until rows).forEach { i ->
@@ -55,7 +66,6 @@ class Matrix(
         }
         return result.toMatrix()
     }
-
 
     fun slice(rowIndices: IntRange, colIndices: IntRange): Matrix {
         require(rowIndices.first >= 0 && rowIndices.last < rows) { "Invalid row indices" }

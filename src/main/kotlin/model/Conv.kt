@@ -9,8 +9,12 @@ class Conv(
     private val stride: Int = 1,
     private val padding: Int = 0,
     private val activationFunction: (Array<Double>) -> (Array<Double>)
-): Layer<Matrix> {
-    private var filters: Matrix = Matrix(filtersAmount, kernel * kernel) { 1.0 }
+): Layer<Matrix, Matrix>(filtersAmount) {
+    private lateinit var filters: Matrix
+
+    override fun initialize() {
+        filters = Matrix(filtersAmount, kernel * kernel) { 1.0 }
+    }
 
     override fun response(input: Matrix): Matrix {
         return input
@@ -44,7 +48,6 @@ class Conv(
         .flatten()
         .toTypedArray()
         .toMatrix()
-        .dot(filters.transpose())
 
     private fun Matrix.vectorize(rowIndex: Int, columnIndex: Int): Array<Double> =
         this.slice(
@@ -56,4 +59,5 @@ class Conv(
         this.data.map {
             activationFunction.invoke(it)
         }.toTypedArray().toMatrix()
+
 }

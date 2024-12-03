@@ -1,24 +1,30 @@
 package com.ertools.model
 
 import com.ertools.common.Matrix
+import com.ertools.common.Matrix.Companion.toMatrix
 
 class Dense(
-    neurons: Int,
-    activationFunction: (DoubleArray) -> (DoubleArray)
-): Layer<Array<Double>> {
-    private var weights: Array<DoubleArray> = Array(neurons) {
-        DoubleArray(0)
-    }
+    private val neurons: Int,
+    private val activationFunction: (Array<Double>) -> (Array<Double>),
+    private val weightsInitializer: () -> (Double)
+): Layer<Array<Double>, Array<Double>>(neurons) {
+    private lateinit var weights: Matrix
 
-    fun loadWeights(weights: Array<DoubleArray>) {
-        this.weights = weights
+    override fun initialize() {
+        require(previousLayer != null) { "E: Layer has not been bound." }
+        weights = Array(previousLayer!!.size) { Array(neurons) { weightsInitializer.invoke() } }.toMatrix()
     }
 
     override fun response(input: Array<Double>): Array<Double> {
-        TODO("Not yet implemented")
+        val resultVector = weights.dot(input)
+        return activationFunction(resultVector)
     }
 
     override fun error(input: Array<Double>): Array<Double> {
-        TODO()
+        return input.map { 2 * it / neurons }.toTypedArray()
+    }
+
+    fun loadWeights(weights: Matrix) {
+        this.weights = weights
     }
 }

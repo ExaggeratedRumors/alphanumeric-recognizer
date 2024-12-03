@@ -1,6 +1,17 @@
 package com.ertools.model
 
-interface Layer<T> {
-    fun response(input: T): T
-    fun error(input: T): T
+abstract class Layer<I, O> (
+    layerSize: Int
+){
+    var size: Int = layerSize
+        protected set
+
+    protected var previousLayer: Layer<*, *>? = null
+    fun bind(previousLayer: Layer<*, *>) {
+        this.previousLayer = previousLayer
+        initialize()
+    }
+    abstract fun initialize()
+    abstract fun response(input: I): O
+    abstract fun error(input: I): O
 }
