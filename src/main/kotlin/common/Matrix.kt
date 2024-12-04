@@ -62,6 +62,27 @@ class Matrix(
         return result.toMatrix()
     }
 
+    fun minus(rightMatrix: Matrix): Matrix {
+        require(this.rows == rightMatrix.rows && this.columns == rightMatrix.columns) { "Invalid matrix dimensions" }
+        val result = Array(this.rows) { Array(this.columns) { 0.0 } }
+        (0 until this.rows).forEach { i ->
+            (0 until this.columns).forEach { j ->
+                result[i][j] = this.data[i][j] - rightMatrix.data[i][j]
+            }
+        }
+        return result.toMatrix()
+    }
+
+    fun mul(factor: Double): Matrix {
+        val result = Array(this.rows) { Array(this.columns) { 0.0 } }
+        (0 until this.rows).forEach { i ->
+            (0 until this.columns).forEach { j ->
+                result[i][j] = this.data[i][j] * factor
+            }
+        }
+        return result.toMatrix()
+    }
+
     fun dot(rightVector: Array<Double>): Array<Double> {
         require(this.columns == rightVector.size) { "Invalid matrix dimensions" }
         val result = Array(this.rows) { 0.0 }

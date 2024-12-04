@@ -26,15 +26,19 @@ class TestDense {
 
     @Test
     fun `dense error`() {
-        val input = arrayOf(1.8555, -1.1375)
         val denseWeights = arrayOf(
             arrayOf(0.1, -0.2, 0.1, 0.3),
             arrayOf(0.2, 0.1, 0.5, -0.3)
         ).toMatrix()
-        val layerErrorExpected = arrayOf(-0.04195, -0.48485, -0.3832, 0.8979)
         val dense = Dense(2)
         dense.loadWeights(denseWeights)
-        val error = dense.error(input)
+
+        val input = arrayOf(3.185, 11.995, 3.27, 12.03)
+        dense.response(input)
+
+        val output = arrayOf(1.8555, -1.1375)
+        val error = dense.error(output)
+        val layerErrorExpected = arrayOf(-0.04195, -0.48485, -0.3832, 0.8979)
 
         error.forEachIndexed { i, _ ->
             assertEquals(layerErrorExpected[i], error[i], 0.0001)
@@ -69,7 +73,6 @@ class TestDense {
             arrayOf(0.236229, 0.236443, 0.537196, -0.163159)
         )
 
-        dense.javaClass.getDeclaredField("weights").isAccessible = true
         val denseUpdatedWeights = dense.javaClass.declaredFields
             .first { it.name == "weights" }
             .apply { isAccessible = true }

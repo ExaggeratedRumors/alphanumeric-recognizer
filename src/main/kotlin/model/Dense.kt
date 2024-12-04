@@ -27,8 +27,9 @@ class Dense(
     }
 
     override fun error(input: Array<Double>): Array<Double> {
+        val error = weights.transpose().dot(input)
         updateWeights(input)
-        return weights.transpose().dot(input)
+        return error
     }
 
     fun loadWeights(weights: Matrix) {
@@ -51,10 +52,6 @@ class Dense(
             "E: Weights and error matrix must have the same dimensions."
         }
 
-        (0 until weights.rows).map { i ->
-            (0 until weights.columns).map { j ->
-                weights.data[i][j] -= learningRate * error.data[i][j]
-            }
-        }
+        weights = weights.minus(error.mul(learningRate))
     }
 }

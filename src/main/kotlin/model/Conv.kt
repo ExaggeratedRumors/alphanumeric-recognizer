@@ -8,9 +8,11 @@ class Conv(
     private val kernel: Int = 3,
     private val stride: Int = 1,
     private val padding: Int = 0,
+    private val learningRate: Double = 0.001,
     private val activationFunction: (Array<Double>) -> (Array<Double>) = { it }
 ): Layer<Matrix, Matrix>(filtersAmount) {
     private lateinit var filters: Matrix
+    private var stack: Matrix? = null
 
     override fun initialize() {
         filters = Matrix(filtersAmount, kernel * kernel) { 1.0 }
@@ -24,7 +26,9 @@ class Conv(
     }
 
     override fun error(input: Matrix): Matrix {
-        TODO()
+        val error = input.transpose().dot(stack!!)
+        updateFilters(error)
+        return error
     }
 
 
@@ -36,9 +40,13 @@ class Conv(
     /** Private **/
     /*************/
 
-    /**
-     * Vectorize image by filter through kernel including stride and flatten it.
-     */
+    private fun updateFilters(error: Matrix) {
+        require(filters.rows == error.rows && filters.columns == error.columns) {
+            "E: Weights and error matrix must have the same dimensions."
+        }
+        filters = filters.minus(error.mul(learningRate))
+    }
+
     private fun Matrix.convolution(): Matrix {
         val vectorizedFilters = (0..this.rows - kernel step stride).map { row ->
                 (0..this.columns - kernel step stride).map { column ->
@@ -48,6 +56,7 @@ class Conv(
             .flatten()
             .toTypedArray()
             .toMatrix()
+        stack = vectorizedFilters
         return vectorizedFilters.dot(filters.transpose())
     }
 

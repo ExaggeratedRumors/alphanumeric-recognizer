@@ -14,8 +14,6 @@ object TestData{
         val balancedTrainLabelsPath = "data/emnist_source_files/emnist-balanced-train-labels-idx1-ubyte"
         val balancedLabelsAmount = 47
         val data = DataLoader.loadLabelData(balancedTrainLabelsPath)
-        data[0].forEach { print("$it ") }
-        println()
         assert(data[0].size == balancedLabelsAmount)
     }
 

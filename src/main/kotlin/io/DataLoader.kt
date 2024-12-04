@@ -43,14 +43,10 @@ object DataLoader {
             .order(ByteOrder.BIG_ENDIAN)
             .also { it.int }
 
-
         val imagesAmount = buffer.int.coerceAtMost(size)
         val rows = buffer.int
         val columns = buffer.int
         val imageSize = rows * columns
-
-        println("$imagesAmount\n$rows\n$columns\n$imageSize")
-
 
         val data = Array(imagesAmount) { sample ->
             DoubleArray(imageSize) { pixel ->
