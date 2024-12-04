@@ -7,6 +7,8 @@ abstract class Layer<I, O> (
         protected set
 
     protected var previousLayer: Layer<*, *>? = null
+    protected var nextLayer: Layer<*, *>? = null
+
     fun bind(previousLayer: Layer<*, *>) {
         this.previousLayer = previousLayer
         initialize()
