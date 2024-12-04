@@ -23,7 +23,7 @@ class Conv(
             .applyActivationFunction()
     }
 
-    override fun mseError(input: Matrix): Matrix {
+    override fun error(input: Matrix): Matrix {
         TODO()
     }
 

@@ -13,5 +13,5 @@ abstract class Layer<I, O> (
     }
     abstract fun initialize()
     abstract fun response(input: I): O
-    abstract fun mseError(input: O): I
+    abstract fun error(input: O): I
 }

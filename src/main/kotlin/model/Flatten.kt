@@ -13,7 +13,7 @@ class Flatten : Layer<Matrix, Array<Double>>(1) {
         return input.flatten()
     }
 
-    override fun mseError(input: Array<Double>): Matrix {
+    override fun error(input: Array<Double>): Matrix {
         return reconstructMatrix(input, previousLayer!!.size)
     }
 }

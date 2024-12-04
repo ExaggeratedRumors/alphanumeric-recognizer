@@ -37,9 +37,8 @@ class TestConv {
     }
 
     @Test
-    fun `convolution mse error`() {
-        val layerOutputError = arrayOf(1.8555, -1.1375)
-        val convErrorExpected = arrayOf(-0.04195, -0.48485, -0.3832, 0.8979)
+    fun `convolution error`() {
+
 
     }
 }

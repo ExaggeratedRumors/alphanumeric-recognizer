@@ -50,7 +50,7 @@ class MaxPool(
         }.toTypedArray().toMatrix()
     }
 
-    override fun mseError(input: Matrix): Matrix {
+    override fun error(input: Matrix): Matrix {
         require(stack != null && maxIndexList.isNotEmpty()) { "E: Layer has not been activated."}
         /*val filtersAmount = stack!!.rows
         val kernelSize = sqrt(1.0 * stack!!.columns).toInt()
