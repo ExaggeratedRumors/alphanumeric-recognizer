@@ -13,15 +13,31 @@ class Matrix(
             val matrixData = this
             return Matrix(rows, columns).apply { this.data = matrixData }
         }
+
+        fun reconstructMatrix(input: Array<Double>, rows: Int): Matrix {
+            val columns = input.size / rows
+            return Array(rows) { row ->
+                Array(columns) { column ->
+                    input[row * columns + column]
+                }
+            }.toMatrix()
+        }
     }
 
     var data: Array<Array<Double>> = Array(rows) { Array(columns) { initalizer.invoke(it) } }
 
     fun flatten(): Array<Double> {
-        return data.flatten().toTypedArray()
+        val result = Array(rows * columns) { 0.0 }
+        (0 until columns).forEach { j ->
+            (0 until rows).forEach { i ->
+                result[j * columns + i] = data[i][j]
+            }
+        }
+        return result
     }
 
     fun applyPadding(padding: Int): Matrix {
+        require(padding >= 0) { "E: Invalid padding value" }
         val paddedArray = Array(rows + padding * 2) {
             Array(columns + padding * 2) { 0.0 }
         }
@@ -76,5 +92,14 @@ class Matrix(
             }.toTypedArray()
         }.toTypedArray()
         return result.toMatrix()
+    }
+
+    fun print() {
+        data.forEach { row ->
+            row.forEach { value ->
+                print("$value ")
+            }
+            println()
+        }
     }
 }

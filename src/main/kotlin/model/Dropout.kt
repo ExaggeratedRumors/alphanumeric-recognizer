@@ -1,7 +1,5 @@
 package com.ertools.model
 
-import com.ertools.common.Matrix
-
 class Dropout(
     factor: Double
 ): Layer<Array<Double>, Array<Double>>(1) {
