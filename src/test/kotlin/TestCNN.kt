@@ -22,30 +22,29 @@ class TestCNN {
 
     @Test
     fun `CNN response`() {
-        val conv = Conv(filtersAmount = 2, kernel = 3, learningRate = 0.01)
-        val dense = Dense(neurons  = 2, learningRate = 0.01)
         val layers = listOf(
             Input(4, 3),
-            conv,
+            Conv(2, 3).apply {
+                val filters = arrayOf(
+                    arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
+                    arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
+                ).toMatrix()
+                loadFilters(filters)
+            },
             Flatten(),
-            dense,
+            Dense(2).apply {
+                val weights = arrayOf(
+                    arrayOf(0.1, -0.2, 0.1, 0.3),
+                    arrayOf(0.2, 0.1, 0.5, -0.3)
+                ).toMatrix()
+                loadWeights(weights)
+            }
         )
 
         val cnn = CNN(
             layers = layers
         )
         cnn.build()
-
-        val filters = arrayOf(
-            arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
-            arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
-        ).toMatrix()
-        conv.loadFilters(filters)
-        val weights = arrayOf(
-            arrayOf(0.1, -0.2, 0.1, 0.3),
-            arrayOf(0.2, 0.1, 0.5, -0.3)
-        ).toMatrix()
-        dense.loadWeights(weights)
 
         val trainX = arrayOf(
             arrayOf(8.5, 0.65, 1.2),
