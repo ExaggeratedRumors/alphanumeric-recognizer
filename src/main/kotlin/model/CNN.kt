@@ -3,14 +3,13 @@ package com.ertools.model
 import com.ertools.common.Matrix
 
 class CNN(
-
-    private val layers: List<Layer<*, *>>
+    private val layers: List<Layer>
 ) {
     fun build() {
         val log = sequence {
             yield("I: Building CNN.")
             layers.forEachIndexed { index, layer ->
-                if (index > 0) layer.bind(layers[index - 1])
+                layer.bind(layers.getOrNull(index - 1), layers.getOrNull(index + 1))
                 yield("I: Layer ${layer.javaClass.simpleName} (${layer.size}) initialized.")
             }
         }.toList()

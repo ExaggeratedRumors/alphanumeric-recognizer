@@ -14,26 +14,40 @@ class Matrix(
             return Matrix(rows, columns).apply { this.data = matrixData }
         }
 
-        fun reconstructMatrix(input: Array<Double>, rows: Int): Matrix {
-            val columns = input.size / rows
-            return Array(rows) { row ->
-                Array(columns) { column ->
-                    input[row * columns + column]
-                }
-            }.toMatrix()
+        fun Array<Double>.toMatrix(): Matrix {
+            val rows = 1
+            val columns = this.size
+            val matrixData = arrayOf(this)
+            return Matrix(rows, columns).apply { this.data = matrixData }
         }
+    }
+
+    fun asVector(): Array<Double> {
+        require(rows == 1 || columns == 1) { "Matrix must be a vector." }
+        if(columns == 1) return this.transpose().data[0]
+        return this.data[0]
     }
 
     var data: Array<Array<Double>> = Array(rows) { Array(columns) { initalizer.invoke(it) } }
 
-    fun flatten(): Array<Double> {
-        val result = Array(rows * columns) { 0.0 }
+    fun flatten(): Matrix {
+        val result = Array(1) { Array(rows * columns) { 0.0 } }
         (0 until columns).forEach { j ->
             (0 until rows).forEach { i ->
-                result[j * columns + i] = data[i][j]
+                result[0][j * columns + i] = data[i][j]
             }
         }
-        return result
+        return result.toMatrix()
+    }
+
+    fun reconstructMatrix(rows: Int): Matrix {
+        val vector = this.asVector()
+        val columns = vector.size / rows
+        return Array(rows) { row ->
+            Array(columns) { column ->
+                vector[row * columns + column]
+            }
+        }.toMatrix()
     }
 
     fun applyPadding(padding: Int): Matrix {

@@ -10,7 +10,7 @@ class Conv(
     private val padding: Int = 0,
     private val learningRate: Double = 0.001,
     private val activationFunction: (Array<Double>) -> (Array<Double>) = { it }
-): Layer<Matrix, Matrix>(filtersAmount) {
+): Layer(filtersAmount) {
     private lateinit var filters: Matrix
     private var stack: Matrix? = null
 
@@ -64,7 +64,7 @@ class Conv(
         this.slice(
             IntRange(rowIndex, rowIndex + kernel - 1),
             IntRange(columnIndex, columnIndex + kernel - 1)
-        ).flatten()
+        ).flatten().asVector()
 
     private fun Matrix.applyActivationFunction(): Matrix =
         this.data.map {

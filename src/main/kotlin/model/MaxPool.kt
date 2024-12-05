@@ -8,7 +8,7 @@ class MaxPool(
     val poolSize: Int = 2,
     val stride: Int = 2,
     val padding: Int = 0
-): Layer<Matrix, Matrix>(poolSize * poolSize) {
+): Layer(poolSize * poolSize) {
     var mask: Matrix? = null
     private val maxIndexList: ArrayList<Pair<Int, Int>> = ArrayList()
     private var stack: Matrix? = null

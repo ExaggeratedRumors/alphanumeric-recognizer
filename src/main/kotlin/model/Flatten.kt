@@ -1,19 +1,18 @@
 package com.ertools.model
 
 import com.ertools.common.Matrix
-import com.ertools.common.Matrix.Companion.reconstructMatrix
 
 
-class Flatten : Layer<Matrix, Array<Double>>(1) {
+class Flatten : Layer(1) {
     override fun initialize() {
         size = previousLayer!!.size
     }
 
-    override fun response(input: Matrix): Array<Double> {
+    override fun response(input: Matrix): Matrix {
         return input.flatten()
     }
 
-    override fun error(input: Array<Double>): Matrix {
-        return reconstructMatrix(input, previousLayer!!.size)
+    override fun error(input: Matrix): Matrix {
+        return input.reconstructMatrix(previousLayer!!.size)
     }
 }

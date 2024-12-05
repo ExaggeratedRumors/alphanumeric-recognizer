@@ -5,17 +5,15 @@ import com.ertools.common.Matrix
 class Input(
     private val inputHeight: Int,
     private val inputWidth: Int
-): Layer<Matrix, Matrix>(inputHeight * inputWidth) {
-
-    /** Variables **/
-    private lateinit var image: Matrix
-
+): Layer(inputHeight * inputWidth) {
     /** API **/
-    override fun initialize() {}
+    override fun initialize() {
+        require(nextLayer != null) { "E: Layer has not been bound correctly." }
+    }
 
     override fun response(input: Matrix): Matrix {
-        image = input
-        return input
+        return nextLayer!!.response(input) as Matrix
+
     }
 
     override fun error(input: Matrix): Matrix {

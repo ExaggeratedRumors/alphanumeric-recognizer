@@ -8,11 +8,11 @@ class Dense(
     private val activationFunction: (Array<Double>) -> (Array<Double>) = { it },
     private val weightsInitializer: () -> (Double) = { 0.0 },
     private val learningRate: Double = 0.001
-): Layer<Array<Double>, Array<Double>>(neurons) {
+): Layer(neurons) {
 
     /** Variables **/
     private lateinit var weights: Matrix
-    private var stack: Array<Double>? = null
+    private var stack: Matrix? = null
 
     /** API **/
     override fun initialize() {
@@ -20,14 +20,14 @@ class Dense(
         weights = Array(previousLayer!!.size) { Array(neurons) { weightsInitializer.invoke() } }.toMatrix()
     }
 
-    override fun response(input: Array<Double>): Array<Double> {
+    override fun response(input: Matrix): Matrix {
         stack = input
-        val resultVector = weights.dot(input)
-        return activationFunction(resultVector)
+        val resultVector = weights.dot(input.transpose()).asVector()
+        return activationFunction(resultVector).toMatrix()
     }
 
-    override fun error(input: Array<Double>): Array<Double> {
-        val error = weights.transpose().dot(input)
+    override fun error(input: Matrix): Matrix {
+        val error = weights.transpose().dot(input.transpose()).transpose()
         updateWeights(input)
         return error
     }
@@ -40,18 +40,12 @@ class Dense(
     /** Private **/
     /*************/
 
-    private fun updateWeights(input: Array<Double>) {
+    private fun updateWeights(input: Matrix) {
         require (stack != null) { "E: Response must be called before updateWeights." }
-        val error = Array(input.size) { row ->
-            Array(stack!!.size) { column ->
-                stack!![column] * input[row]
-            }
-        }.toMatrix()
-
+        val error = input.transpose().dot(stack!!)
         require(weights.rows == error.rows && weights.columns == error.columns) {
             "E: Weights and error matrix must have the same dimensions."
         }
-
         weights = weights.minus(error.mul(learningRate))
     }
 }
