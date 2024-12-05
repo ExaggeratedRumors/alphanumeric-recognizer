@@ -3,12 +3,12 @@ import com.ertools.model.MaxPool
 import org.junit.jupiter.api.Assertions.assertEquals
 import kotlin.test.Test
 
-class TestPool {
+class TestPooling {
 
     @Test
     fun `max pooling layer response`() {
         val inputMatrix = arrayOf(
-            arrayOf(3.0, 6.0, 7.0, 5.0, 3.0, 6.0),
+            arrayOf(3.0, 6.0, 7.0, 5.0, 3.0, 5.0),
             arrayOf(6.0, 2.0, 9.0, 1.0, 2.0, 7.0),
             arrayOf(0.0, 9.0, 3.0, 6.0, 0.0, 6.0),
             arrayOf(2.0, 6.0, 1.0, 8.0, 8.0, 9.0),

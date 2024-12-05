@@ -9,8 +9,7 @@ class MaxPool(
     private val stride: Int = 2,
     private val padding: Int = 0
 ): Layer() {
-    var mask: Matrix? = null
-    private val maxValuesIndices: ArrayList<Pair<Int, Int>> = ArrayList()
+    private val maxValuesIndices: ArrayList<List<Pair<Int, Int>>> = ArrayList()
     private var stack: Matrix? = null
 
     init {
@@ -28,19 +27,18 @@ class MaxPool(
 
     /** Choose max value per each pooled minor and then remember index of this value **/
     override fun response(input: Matrix): Matrix {
-        input.print()
         stack = input
         maxValuesIndices.clear()
         val kernel = sqrt(1.0 * input.columns).toInt()
 
         return (0 until input.rows step stride).map { filter ->
             val matrix = input.data[filter].toMatrix().reconstructMatrix(kernel).applyPadding(padding)
-            matrix.print()
-            (0 until kernel step stride).map { row ->
+            val maxValuesVector = ArrayList<Pair<Int, Int>>()
+            val pooledFilter = (0 until kernel step stride).map { row ->
                 (0 until kernel step stride).map { column ->
                     val minor = matrix.slice(
-                        IntRange(row * stride, (row + poolSize) * stride - 1),
-                        IntRange(column * stride, (column + poolSize) * stride - 1)
+                        IntRange(row, (row + poolSize) - 1),
+                        IntRange(column, (column + poolSize) - 1)
                     )
                     var maxIndex: Pair<Int, Int> = Pair(0, 0)
                     var maxValue = minor.data[0][0]
@@ -52,25 +50,29 @@ class MaxPool(
                             }
                         }
                     }
-                    maxValuesIndices.add(maxIndex)
+                    maxValuesVector.add(maxIndex)
                     maxValue
                 }.toTypedArray()
             }.toTypedArray().toMatrix().matrixFlatten().asVector()
+            maxValuesIndices.add(maxValuesVector)
+            pooledFilter
         }.toTypedArray().toMatrix()
     }
 
     override fun error(input: Matrix): Matrix {
         require(stack != null && maxValuesIndices.isNotEmpty()) { "E: Layer has not been activated."}
-        /*val filtersAmount = stack!!.rows
-        val kernelSize = sqrt(1.0 * stack!!.columns).toInt()
-        (0 until filtersAmount).map { filter ->
-            val kernel = Array(kernelSize) { Array(kernelSize) { 0.0 } }
-            val flatFilter = input.slice(
-                IntRange(filter * poolSize, (filter + 1) * poolSize),
-                IntRange
-            )
-        }*/
-        TODO()
+        val kernelSize = sqrt(1.0 * previousLayer!!.outputWidth).toInt()
+        val error: ArrayList<Array<Double>> = ArrayList()
+        /** Non-indexed values are zeros **/
+        input.data.forEachIndexed{ i, flatten ->
+            val filter = Array(kernelSize) { Array(kernelSize) { 0.0 } }
+            val pool = flatten.toMatrix().reconstructMatrix(poolSize).matrixFlatten().asVector()
+            maxValuesIndices[i].forEachIndexed { j, pair ->
+                filter[pair.first][pair.second] = pool[j]
+            }
+            error.add(filter.toMatrix().matrixFlatten().asVector())
+        }
+        return error.toTypedArray().toMatrix()
     }
 
 }
