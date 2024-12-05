@@ -66,7 +66,7 @@ class Conv(
         this.slice(
             IntRange(rowIndex, rowIndex + kernel - 1),
             IntRange(columnIndex, columnIndex + kernel - 1)
-        ).flatten().asVector()
+        ).matrixFlatten(orientation = Matrix.FlattenOrientation.Vertical).asVector()
 
     private fun Matrix.applyActivationFunction(): Matrix =
         this.data.map {

@@ -18,7 +18,7 @@ class Dropout(
     }
 
     override fun response(input: Matrix): Matrix {
-        val flatten = input.flatten().asVector()
+        val flatten = input.matrixFlatten().asVector()
         val expiredNeuronsAmount = (flatten.size * factor).toInt()
         indices = flatten.indices
             .toList()
@@ -33,7 +33,7 @@ class Dropout(
 
     override fun error(input: Matrix): Matrix {
         require(indices != null) { "E: Response must be called before error." }
-        val flatten = input.flatten().asVector()
+        val flatten = input.matrixFlatten().asVector()
         indices!!.forEach {
             flatten[it] = 0.0
         }

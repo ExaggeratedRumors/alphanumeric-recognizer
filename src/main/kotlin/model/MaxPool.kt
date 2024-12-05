@@ -17,29 +17,30 @@ class MaxPool(
         require(poolSize > 1 && stride > 0 && padding >= 0) {
             "E: Size must be higher than 1 and stride higher than 0."
         }
+    }
+
+    override fun initialize() {
         val filteredMatrixHeight = (previousLayer!!.outputHeight - poolSize) / stride + 1
         val filteredMatrixWidth = (previousLayer!!.outputWidth - poolSize) / stride + 1
         outputWidth = filteredMatrixHeight * filteredMatrixWidth
         outputHeight = previousLayer!!.outputHeight
     }
 
-    override fun initialize() {
-        TODO("Not yet implemented")
-    }
-
     /** Choose max value per each pooled minor and then remember index of this value **/
     override fun response(input: Matrix): Matrix {
+        input.print()
         stack = input
         maxValuesIndices.clear()
         val kernel = sqrt(1.0 * input.columns).toInt()
 
         return (0 until input.rows step stride).map { filter ->
             val matrix = input.data[filter].toMatrix().reconstructMatrix(kernel).applyPadding(padding)
+            matrix.print()
             (0 until kernel step stride).map { row ->
                 (0 until kernel step stride).map { column ->
                     val minor = matrix.slice(
-                        IntRange(row * stride, (row + poolSize) * stride),
-                        IntRange(column * stride, (column + poolSize) * stride)
+                        IntRange(row * stride, (row + poolSize) * stride - 1),
+                        IntRange(column * stride, (column + poolSize) * stride - 1)
                     )
                     var maxIndex: Pair<Int, Int> = Pair(0, 0)
                     var maxValue = minor.data[0][0]
@@ -54,7 +55,7 @@ class MaxPool(
                     maxValuesIndices.add(maxIndex)
                     maxValue
                 }.toTypedArray()
-            }.toTypedArray().toMatrix().flatten().asVector()
+            }.toTypedArray().toMatrix().matrixFlatten().asVector()
         }.toTypedArray().toMatrix()
     }
 

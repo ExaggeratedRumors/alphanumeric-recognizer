@@ -11,7 +11,7 @@ class Flatten : Layer() {
     }
 
     override fun response(input: Matrix): Matrix {
-        return input.flatten()
+        return input.matrixFlatten()
     }
 
     override fun error(input: Matrix): Matrix {

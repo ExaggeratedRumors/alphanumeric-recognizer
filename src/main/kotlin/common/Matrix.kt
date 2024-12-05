@@ -6,6 +6,11 @@ class Matrix(
     val columns: Int,
     private val initalizer: (Int) -> (Double) = { 0.0 }
 ) {
+    enum class FlattenOrientation {
+        Horizontal,
+        Vertical
+    }
+
     companion object {
         fun Array<Array<Double>>.toMatrix(): Matrix {
             val rows = this.size
@@ -30,25 +35,39 @@ class Matrix(
 
     var data: Array<Array<Double>> = Array(rows) { Array(columns) { initalizer.invoke(it) } }
 
-    fun flatten(): Matrix {
+    fun matrixFlatten(orientation: FlattenOrientation = FlattenOrientation.Horizontal): Matrix {
         if(rows == 1) return this
-        val result = Array(1) { Array(rows * columns) { 0.0 } }
-        (0 until columns).forEach { j ->
-            (0 until rows).forEach { i ->
-                result[0][j * columns + i] = data[i][j]
+        if(orientation == FlattenOrientation.Vertical) {
+            val result = Array(1) { Array(rows * columns) { 0.0 } }
+            (0 until columns).forEach { j ->
+                (0 until rows).forEach { i ->
+                    result[0][j * columns + i] = data[i][j]
+                }
             }
+            return result.toMatrix()
+        } else {
+            return this.data.flatten().toTypedArray().toMatrix()
         }
-        return result.toMatrix()
     }
 
-    fun reconstructMatrix(rows: Int): Matrix {
+    fun reconstructMatrix(rows: Int, orientation: FlattenOrientation = FlattenOrientation.Horizontal): Matrix {
         val vector = this.asVector()
         val columns = vector.size / rows
-        return Array(rows) { row ->
-            Array(columns) { column ->
-                vector[row * columns + column]
+        if(orientation == FlattenOrientation.Vertical) {
+            val result = Array(rows) { Array(columns) { 0.0 } }
+            (0 until rows).forEach { i ->
+                (0 until columns).forEach { j ->
+                    result[i][j] = vector[i * columns + j]
+                }
             }
-        }.toMatrix()
+            return result.toMatrix()
+        } else {
+            return Array(rows) { row ->
+                Array(columns) { column ->
+                    vector[row * columns + column]
+                }
+            }.toMatrix()
+        }
     }
 
     fun applyPadding(padding: Int): Matrix {
@@ -96,17 +115,6 @@ class Matrix(
             }
         }
         return result.toMatrix()
-    }
-
-    fun dot(rightVector: Array<Double>): Array<Double> {
-        require(this.columns == rightVector.size) { "Invalid matrix dimensions" }
-        val result = Array(this.rows) { 0.0 }
-        (0 until this.rows).forEach { i ->
-            (0 until this.columns).forEach { j ->
-                result[i] += this.data[i][j] * rightVector[j]
-            }
-        }
-        return result
     }
 
     fun transpose(): Matrix {
