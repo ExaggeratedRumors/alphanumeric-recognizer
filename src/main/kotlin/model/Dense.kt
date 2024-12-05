@@ -8,7 +8,7 @@ class Dense(
     private val activationFunction: (Array<Double>) -> (Array<Double>) = { it },
     private val weightsInitializer: () -> (Double) = { 0.0 },
     private val learningRate: Double = 0.001
-): Layer(neurons) {
+): Layer() {
 
     /** Variables **/
     private lateinit var weights: Matrix
@@ -17,7 +17,9 @@ class Dense(
     /** API **/
     override fun initialize() {
         require(previousLayer != null) { "E: Layer has not been bound." }
-        weights = Array(previousLayer!!.size) { Array(neurons) { weightsInitializer.invoke() } }.toMatrix()
+        outputHeight = 1
+        outputWidth = neurons
+        weights = Array(neurons) { Array(previousLayer!!.outputWidth) { weightsInitializer.invoke() } }.toMatrix()
     }
 
     override fun response(input: Matrix): Matrix {

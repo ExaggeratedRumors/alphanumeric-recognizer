@@ -12,7 +12,7 @@ class CNN(
             yield("I: Building CNN.")
             layers.forEachIndexed { index, layer ->
                 layer.bind(layers.getOrNull(index - 1), layers.getOrNull(index + 1))
-                yield("I: Layer ${layer.javaClass.simpleName} (${layer.size}) initialized.")
+                yield("I: Layer ${layer.javaClass.simpleName} (${layer.outputHeight},${layer.outputWidth}) initialized.")
             }
         }.toList()
         log.forEach { println(it) }

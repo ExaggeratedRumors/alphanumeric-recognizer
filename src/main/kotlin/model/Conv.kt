@@ -10,12 +10,14 @@ class Conv(
     private val padding: Int = 0,
     private val learningRate: Double = 0.001,
     private val activationFunction: (Array<Double>) -> (Array<Double>) = { it }
-): Layer(filtersAmount) {
+): Layer() {
     private lateinit var filters: Matrix
     private var stack: Matrix? = null
 
     override fun initialize() {
         filters = Matrix(filtersAmount, kernel * kernel) { 1.0 }
+        outputHeight = filtersAmount
+        outputWidth = kernel * kernel
     }
 
     override fun response(input: Matrix): Matrix {

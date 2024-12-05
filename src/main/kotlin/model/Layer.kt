@@ -2,14 +2,15 @@ package com.ertools.model
 
 import com.ertools.common.Matrix
 
-abstract class Layer (
-    layerSize: Int
-){
-    var size: Int = layerSize
+abstract class Layer {
+    var outputHeight: Int = 0
         protected set
-
-    protected var previousLayer: Layer? = null
-    protected var nextLayer: Layer? = null
+    var outputWidth: Int = 0
+        protected set
+    var previousLayer: Layer? = null
+        protected set
+    var nextLayer: Layer? = null
+        protected set
 
     fun bind(previousLayer: Layer? = null, nextLayer: Layer? = null) {
         this.previousLayer = previousLayer

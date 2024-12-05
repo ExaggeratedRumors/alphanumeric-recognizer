@@ -3,9 +3,11 @@ package com.ertools.model
 import com.ertools.common.Matrix
 
 
-class Flatten : Layer(1) {
+class Flatten : Layer() {
     override fun initialize() {
-        size = previousLayer!!.size
+        require(previousLayer != null) { "E: Layer has not been bound." }
+        outputHeight = 1
+        outputWidth = previousLayer!!.outputWidth * previousLayer!!.outputHeight
     }
 
     override fun response(input: Matrix): Matrix {
@@ -13,6 +15,6 @@ class Flatten : Layer(1) {
     }
 
     override fun error(input: Matrix): Matrix {
-        return input.reconstructMatrix(previousLayer!!.size)
+        return input.reconstructMatrix(previousLayer!!.outputHeight)
     }
 }

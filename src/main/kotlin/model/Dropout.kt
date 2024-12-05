@@ -5,15 +5,16 @@ import com.ertools.common.Matrix.Companion.toMatrix
 
 class Dropout(
     private val factor: Double
-): Layer(1) {
-    var indices: List<Int>? = null
+): Layer() {
+    private var indices: List<Int>? = null
 
     init {
         require(factor in 0.0..1.0) { "E: Factor must be between 0 and 1." }
     }
 
     override fun initialize() {
-        size = previousLayer!!.size
+        outputHeight = previousLayer!!.outputHeight
+        outputWidth = previousLayer!!.outputWidth
     }
 
     override fun response(input: Matrix): Matrix {
