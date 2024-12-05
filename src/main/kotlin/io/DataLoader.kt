@@ -12,7 +12,7 @@ object DataLoader {
         val data: List<DoubleArray>
     )
 
-    fun loadLabelData(filePath: String, size: Int = Int.MAX_VALUE): List<IntArray> {
+    fun loadLabelData(filePath: String, size: Int = Int.MAX_VALUE): List<Array<Double>> {
         val buffer: ByteBuffer = ByteBuffer
             .wrap(File(filePath).readBytes())
             .order(ByteOrder.BIG_ENDIAN)
@@ -31,9 +31,9 @@ object DataLoader {
         val uniqueLabels = labels.distinct().sorted()
         return labels.map { label ->
             uniqueLabels.indices.map { index ->
-                if(index == label) 1
-                else 0
-            }.toIntArray()
+                if(index == label) 1.0
+                else 0.0
+            }.toTypedArray()
         }
     }
 

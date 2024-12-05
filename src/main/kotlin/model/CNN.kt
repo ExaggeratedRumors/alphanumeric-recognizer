@@ -7,15 +7,14 @@ import com.ertools.common.Matrix.Companion.toMatrix
 class CNN(
     private val layers: List<Layer>
 ) {
-    fun build() {
+    fun build(): List<String> {
         val log = sequence {
-            yield("I: Building CNN.")
             layers.forEachIndexed { index, layer ->
                 layer.bind(layers.getOrNull(index - 1), layers.getOrNull(index + 1))
-                yield("I: Layer ${layer.javaClass.simpleName} (${layer.outputHeight},${layer.outputWidth}) initialized.")
+                yield("R: Layer ${layer.javaClass.simpleName} (${layer.outputHeight},${layer.outputWidth}) initialized.")
             }
         }.toList()
-        log.forEach { println(it) }
+        return log
     }
 
     fun fit(x: List<Matrix>, y: List<Array<Double>>): List<Array<Double>> {
