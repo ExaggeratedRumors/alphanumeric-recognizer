@@ -10,7 +10,6 @@ class MaxPool(
     private val padding: Int = 0
 ): Layer() {
     private val maxValuesIndices: ArrayList<List<Pair<Int, Int>>> = ArrayList()
-    private var stack: Matrix? = null
 
     init {
         require(poolSize > 1 && stride > 0 && padding >= 0) {
@@ -19,15 +18,13 @@ class MaxPool(
     }
 
     override fun initialize() {
-        val filteredMatrixHeight = (previousLayer!!.outputHeight - poolSize) / stride + 1
-        val filteredMatrixWidth = (previousLayer!!.outputWidth - poolSize) / stride + 1
-        outputWidth = filteredMatrixHeight * filteredMatrixWidth
+        val filteredMatrixWidth = (sqrt(1.0 * previousLayer!!.outputWidth).toInt() - poolSize) / stride + 1
+        outputWidth = filteredMatrixWidth * filteredMatrixWidth
         outputHeight = previousLayer!!.outputHeight
     }
 
     /** Choose max value per each pooled minor and then remember index of this value **/
     override fun response(input: Matrix): Matrix {
-        stack = input
         maxValuesIndices.clear()
         val kernel = sqrt(1.0 * input.columns).toInt()
 
@@ -46,7 +43,7 @@ class MaxPool(
                         rowValue.forEachIndexed { columnIndex, columnValue ->
                             if (columnValue > maxValue) {
                                 maxValue = columnValue
-                                maxIndex = Pair(rowIndex, columnIndex)
+                                maxIndex = Pair(row + rowIndex, column + columnIndex)
                             }
                         }
                     }
@@ -60,13 +57,14 @@ class MaxPool(
     }
 
     override fun error(input: Matrix): Matrix {
-        require(stack != null && maxValuesIndices.isNotEmpty()) { "E: Layer has not been activated."}
         val kernelSize = sqrt(1.0 * previousLayer!!.outputWidth).toInt()
+        val poolingOutputSize = sqrt(1.0 * outputWidth).toInt()
         val error: ArrayList<Array<Double>> = ArrayList()
-        /** Non-indexed values are zeros **/
+
         input.data.forEachIndexed{ i, flatten ->
+            /** Non-indexed values are zeros **/
             val filter = Array(kernelSize) { Array(kernelSize) { 0.0 } }
-            val pool = flatten.toMatrix().reconstructMatrix(poolSize).matrixFlatten().asVector()
+            val pool = flatten.toMatrix().reconstructMatrix(poolingOutputSize).matrixFlatten().asVector()
             maxValuesIndices[i].forEachIndexed { j, pair ->
                 filter[pair.first][pair.second] = pool[j]
             }
@@ -74,5 +72,4 @@ class MaxPool(
         }
         return error.toTypedArray().toMatrix()
     }
-
 }
