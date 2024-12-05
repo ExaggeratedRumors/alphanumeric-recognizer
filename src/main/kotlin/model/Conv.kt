@@ -9,15 +9,17 @@ class Conv(
     private val stride: Int = 1,
     private val padding: Int = 0,
     private val learningRate: Double = 0.001,
+    private val filtersInitializer: () -> (Double) = { 0.0 },
     private val activationFunction: (Array<Double>) -> (Array<Double>) = { it }
 ): Layer() {
-    private lateinit var filters: Matrix
+    private var filters: Matrix? = null
     private var stack: Matrix? = null
 
     override fun initialize() {
-        filters = Matrix(filtersAmount, kernel * kernel) { 1.0 }
         outputHeight = filtersAmount
         outputWidth = kernel * kernel
+        if(filters != null) return
+        filters = Matrix(filtersAmount, kernel * kernel) { filtersInitializer.invoke() }
     }
 
     override fun response(input: Matrix): Matrix {
@@ -43,10 +45,10 @@ class Conv(
     /*************/
 
     private fun updateFilters(error: Matrix) {
-        require(filters.rows == error.rows && filters.columns == error.columns) {
+        require(filters!!.rows == error.rows && filters!!.columns == error.columns) {
             "E: Weights and error matrix must have the same dimensions."
         }
-        filters = filters.minus(error.mul(learningRate))
+        filters = filters!!.minus(error.mul(learningRate))
     }
 
     private fun Matrix.convolution(): Matrix {
@@ -59,7 +61,7 @@ class Conv(
             .toTypedArray()
             .toMatrix()
         stack = vectorizedFilters
-        return vectorizedFilters.dot(filters.transpose())
+        return vectorizedFilters.dot(filters!!.transpose())
     }
 
     private fun Matrix.vectorize(rowIndex: Int, columnIndex: Int): Array<Double> =

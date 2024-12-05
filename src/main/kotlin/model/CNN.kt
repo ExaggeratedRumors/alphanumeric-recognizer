@@ -23,7 +23,9 @@ class CNN(
         x.zip(y).forEach { (image, label) ->
             /** 1. Calculate response **/
             var response: Matrix = image
-            layers.forEach { response = it.response(response) }
+            layers.forEach {
+                response = it.response(response)
+            }
 
             /** 2. Calculate error **/
             var error = dmse(response.asVector(), label).toMatrix()

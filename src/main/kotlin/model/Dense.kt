@@ -5,13 +5,13 @@ import com.ertools.common.Matrix.Companion.toMatrix
 
 class Dense(
     private val neurons: Int,
-    private val activationFunction: (Array<Double>) -> (Array<Double>) = { it },
+    private val learningRate: Double = 0.001,
     private val weightsInitializer: () -> (Double) = { 0.0 },
-    private val learningRate: Double = 0.001
-): Layer() {
+    private val activationFunction: (Array<Double>) -> (Array<Double>) = { it },
+    ): Layer() {
 
     /** Variables **/
-    private lateinit var weights: Matrix
+    private var weights: Matrix? = null
     private var stack: Matrix? = null
 
     /** API **/
@@ -19,17 +19,18 @@ class Dense(
         require(previousLayer != null) { "E: Layer has not been bound." }
         outputHeight = 1
         outputWidth = neurons
+        if(weights != null) return
         weights = Array(neurons) { Array(previousLayer!!.outputWidth) { weightsInitializer.invoke() } }.toMatrix()
     }
 
     override fun response(input: Matrix): Matrix {
         stack = input
-        val resultVector = weights.dot(input.transpose()).asVector()
+        val resultVector = weights!!.dot(input.transpose()).asVector()
         return activationFunction(resultVector).toMatrix()
     }
 
     override fun error(input: Matrix): Matrix {
-        val error = weights.transpose().dot(input.transpose()).transpose()
+        val error = weights!!.transpose().dot(input.transpose()).transpose()
         updateWeights(input)
         return error
     }
@@ -45,9 +46,9 @@ class Dense(
     private fun updateWeights(input: Matrix) {
         require (stack != null) { "E: Response must be called before updateWeights." }
         val error = input.transpose().dot(stack!!)
-        require(weights.rows == error.rows && weights.columns == error.columns) {
+        require(weights!!.rows == error.rows && weights!!.columns == error.columns) {
             "E: Weights and error matrix must have the same dimensions."
         }
-        weights = weights.minus(error.mul(learningRate))
+        weights = weights!!.minus(error.mul(learningRate))
     }
 }

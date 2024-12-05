@@ -14,7 +14,7 @@ class Input(
     }
 
     override fun response(input: Matrix): Matrix {
-        return nextLayer!!.response(input)
+        return input
     }
 
     override fun error(input: Matrix): Matrix {
