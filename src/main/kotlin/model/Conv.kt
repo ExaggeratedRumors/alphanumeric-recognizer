@@ -2,6 +2,7 @@ package com.ertools.model
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 class Conv(
     private val filtersAmount: Int,
@@ -9,8 +10,8 @@ class Conv(
     private val stride: Int = 1,
     private val padding: Int = 0,
     private val learningRate: Double = 0.001,
-    private val filtersInitializer: () -> (Double) = { 0.0 },
-    private val activationFunction: (Array<Double>) -> (Array<Double>) = { it }
+    @JsonIgnore private val filtersInitializer: () -> (Double) = { 0.0 },
+    private val activationFunction: ActivationFunction = ActivationFunction.Linear
 ): Layer() {
     private var filters: Matrix? = null
     private var stack: Matrix? = null

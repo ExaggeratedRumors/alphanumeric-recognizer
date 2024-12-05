@@ -2,13 +2,14 @@ package com.ertools.model
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 class Dense(
     private val neurons: Int,
     private val learningRate: Double = 0.001,
-    private val weightsInitializer: () -> (Double) = { 0.0 },
-    private val activationFunction: (Array<Double>) -> (Array<Double>) = { it },
-    ): Layer() {
+    @JsonIgnore private val weightsInitializer: () -> (Double) = { 0.0 },
+    private val activationFunction: ActivationFunction = ActivationFunction.Linear
+): Layer() {
 
     /** Variables **/
     private var weights: Matrix? = null
@@ -26,7 +27,7 @@ class Dense(
     override fun response(input: Matrix): Matrix {
         stack = input
         val resultVector = weights!!.dot(input.transpose()).asVector()
-        return activationFunction(resultVector).toMatrix()
+        return activationFunction.invoke(resultVector).toMatrix()
     }
 
     override fun error(input: Matrix): Matrix {

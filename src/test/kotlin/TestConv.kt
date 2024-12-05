@@ -24,7 +24,7 @@ class TestConv {
             arrayOf(3.27, 12.03)
         )
 
-        val conv = Conv(2, 3, 1, 0) { it }
+        val conv = Conv(2, 3, 1, 0)
         conv.loadFilters(kernel)
         val outputMatrix = conv.response(inputMatrix)
 

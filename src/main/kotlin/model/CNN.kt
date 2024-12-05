@@ -43,8 +43,4 @@ class CNN(
         layers.forEach { response = it.response(response) }
         return response.asVector()
     }
-
-    /**************/
-    /** Privates **/
-    /**************/
 }

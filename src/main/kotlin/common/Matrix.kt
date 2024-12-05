@@ -1,10 +1,12 @@
 package com.ertools.common
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+
 
 class Matrix(
     val rows: Int,
     val columns: Int,
-    private val initalizer: (Int) -> (Double) = { 0.0 }
+    @JsonIgnore private val initalizer: (Int) -> (Double) = { 0.0 }
 ) {
     enum class FlattenOrientation {
         Horizontal,
