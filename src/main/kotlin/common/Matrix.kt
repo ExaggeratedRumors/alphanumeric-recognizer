@@ -31,6 +31,7 @@ class Matrix(
     var data: Array<Array<Double>> = Array(rows) { Array(columns) { initalizer.invoke(it) } }
 
     fun flatten(): Matrix {
+        if(rows == 1) return this
         val result = Array(1) { Array(rows * columns) { 0.0 } }
         (0 until columns).forEach { j ->
             (0 until rows).forEach { i ->
