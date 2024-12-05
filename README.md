@@ -20,3 +20,9 @@ in progress
 ## Images data
 
 Source: <a href="https://www.kaggle.com/datasets/crawford/emnist/data">EMNIST</a>
+
+
+## TODO
+- errors for activation functions
+- batches
+- endpoints for cnn

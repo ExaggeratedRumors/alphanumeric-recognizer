@@ -17,17 +17,20 @@ class Conv(
     private var stack: Matrix? = null
 
     override fun initialize() {
-        outputHeight = filtersAmount
-        outputWidth = kernel * kernel
+        val filteredMatrixWidth =  (previousLayer!!.outputWidth - kernel) / stride + 1
+        val filteredMatrixHeight = (previousLayer!!.outputHeight - kernel) / stride + 1
+        outputHeight = filteredMatrixHeight * filteredMatrixWidth
+        outputWidth = filtersAmount
         if(filters != null) return
         filters = Matrix(filtersAmount, kernel * kernel) { filtersInitializer.invoke() }
     }
 
     override fun response(input: Matrix): Matrix {
-        return input
+        val result = input
             .applyPadding(padding)
             .convolution()
             .applyActivationFunction()
+        return result
     }
 
     override fun error(input: Matrix): Matrix {

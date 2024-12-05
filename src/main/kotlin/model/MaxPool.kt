@@ -28,7 +28,7 @@ class MaxPool(
         maxValuesIndices.clear()
         val kernel = sqrt(1.0 * input.columns).toInt()
 
-        return (0 until input.rows step stride).map { filter ->
+        val result = (0 until input.rows).map { filter ->
             val matrix = input.data[filter].toMatrix().reconstructMatrix(kernel).applyPadding(padding)
             val maxValuesVector = ArrayList<Pair<Int, Int>>()
             val pooledFilter = (0 until kernel step stride).map { row ->
@@ -54,6 +54,7 @@ class MaxPool(
             maxValuesIndices.add(maxValuesVector)
             pooledFilter
         }.toTypedArray().toMatrix()
+        return result
     }
 
     override fun error(input: Matrix): Matrix {
