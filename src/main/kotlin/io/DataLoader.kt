@@ -1,5 +1,7 @@
 package com.ertools.io
 
+import com.ertools.common.Matrix
+import com.ertools.common.Matrix.Companion.toMatrix
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -9,7 +11,7 @@ object DataLoader {
         val amount: Int,
         val rows: Int,
         val columns: Int,
-        val data: List<DoubleArray>
+        val data: List<Matrix>
     )
 
     fun loadLabelData(filePath: String, size: Int = Int.MAX_VALUE): List<Array<Double>> {
@@ -49,14 +51,14 @@ object DataLoader {
         val imageSize = rows * columns
 
         val data = Array(imagesAmount) { sample ->
-            DoubleArray(imageSize) { pixel ->
+            Array(imageSize) { pixel ->
                 try {
                     (buffer.get().toInt() and 0xFF) / 255.0
                 } catch (e: Exception) {
                     e.printStackTrace()
                     error("E: Data loader failed to load ${pixel + 1} sample of $imagesAmount total.")
                 }
-            }
+            }.toMatrix().reconstructMatrix(rows)
         }.toList()
 
         return ImageSetData(
