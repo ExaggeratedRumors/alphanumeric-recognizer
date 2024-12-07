@@ -42,4 +42,11 @@ class CNN(
         layers.forEach { response = it.response(response) }
         return response.asVector()
     }
+
+    fun accuracy(predictedLabels: List<Array<Double>>, y: List<Array<Double>>): Double {
+        val correct = predictedLabels.zip(y).count { (predicted, real) ->
+            predicted.indexOf(predicted.maxOf { it }) == real.indexOf(real.maxOf { it })
+        }
+        return correct.toDouble() / y.size
+    }
 }

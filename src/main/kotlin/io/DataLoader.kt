@@ -14,7 +14,13 @@ object DataLoader {
         val data: List<Matrix>
     )
 
-    fun loadLabelData(filePath: String, size: Int = Int.MAX_VALUE): List<Array<Double>> {
+    data class LabelSetData(
+        val amount: Int,
+        val labelsAmount: Int,
+        val labels: List<Array<Double>>
+    )
+
+    fun loadLabelData(filePath: String, size: Int = Int.MAX_VALUE): LabelSetData {
         val buffer: ByteBuffer = ByteBuffer
             .wrap(File(filePath).readBytes())
             .order(ByteOrder.BIG_ENDIAN)
@@ -31,12 +37,18 @@ object DataLoader {
         }
 
         val uniqueLabels = labels.distinct().sorted()
-        return labels.map { label ->
+        val data = labels.map { label ->
             uniqueLabels.indices.map { index ->
-                if(index == label) 1.0
+                if (index == label) 1.0
                 else 0.0
             }.toTypedArray()
         }
+        val labelsData = LabelSetData(
+            amount = data.size,
+            labelsAmount = uniqueLabels.size,
+            labels = data
+        )
+        return labelsData
     }
 
     fun loadImageData(filePath: String, size: Int = Int.MAX_VALUE): ImageSetData {
