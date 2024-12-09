@@ -23,7 +23,6 @@ Source: <a href="https://www.kaggle.com/datasets/crawford/emnist/data">EMNIST</a
 
 
 ## TODO
-- add every dimensions and fix Conv layer (also error)
-- errors for activation functions
+- full convolution
 - batches
 - endpoints for cnn

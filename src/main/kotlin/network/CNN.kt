@@ -1,6 +1,6 @@
 package com.ertools.model
 
-import com.ertools.common.Error.dmse
+import com.ertools.operations.Error.dmse
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
 
@@ -43,12 +43,5 @@ class CNN(
         var response: Matrix = x
         layers.forEach { response = it.response(response) }
         return response.asVector()
-    }
-
-    fun accuracy(predictedLabels: List<Array<Double>>, y: List<Array<Double>>): Double {
-        val correct = predictedLabels.zip(y).count { (predicted, real) ->
-            predicted.indexOf(predicted.maxOf { it }) == real.indexOf(real.maxOf { it })
-        }
-        return correct.toDouble() / y.size
     }
 }

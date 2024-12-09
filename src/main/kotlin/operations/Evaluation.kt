@@ -1,8 +1,8 @@
-package com.ertools.common
+package com.ertools.operations
 
 object Evaluation
 {
-    fun consussionMatrix(trueLabels: List<Array<Double>>, predictedLabels: List<Array<Double>>) {
+    fun confusionMatrix(trueLabels: List<Array<Double>>, predictedLabels: List<Array<Double>>) {
         val classes = (0 until trueLabels[0].size).toList()
         val confusionMatrix = Array(classes.size) { IntArray(classes.size) }
         for(i in trueLabels.indices) {
@@ -17,5 +17,12 @@ object Evaluation
             classes[it]
         }.joinToString("\t")
         println("\t\t$labels")
+    }
+
+    fun accuracy(trueLabels: List<Array<Double>>, predictedLabels: List<Array<Double>>): Double {
+        val correct = predictedLabels.zip(trueLabels).count { (predicted, real) ->
+            predicted.indexOf(predicted.maxOf { it }) == real.indexOf(real.maxOf { it })
+        }
+        return correct.toDouble() / trueLabels.size
     }
 }

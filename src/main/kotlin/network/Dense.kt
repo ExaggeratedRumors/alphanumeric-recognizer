@@ -2,6 +2,7 @@ package com.ertools.model
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
+import com.ertools.operations.ActivationFunction
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 class Dense(
@@ -32,7 +33,12 @@ class Dense(
     }
 
     override fun error(input: Matrix): Matrix {
-        val error = weights!!.transpose().dot(input.transpose()).transpose()
+        val error = weights!!
+            .transpose()
+            .applyForEachRow { activationFunction.invoke(it, derivative = true) }
+            .dot(input.transpose())
+            .transpose()
+
         updateWeights(input)
         return error
     }

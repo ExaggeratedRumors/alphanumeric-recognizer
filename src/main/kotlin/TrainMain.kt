@@ -1,10 +1,12 @@
 package com.ertools
 
-import com.ertools.common.Initializer
+import com.ertools.operations.Evaluation
+import com.ertools.operations.Initializer
 import com.ertools.common.Utils
 import com.ertools.io.DataLoader
 import com.ertools.io.ModelSerialization
 import com.ertools.model.*
+import com.ertools.operations.ActivationFunction
 import java.util.*
 
 fun main() {
@@ -35,7 +37,7 @@ fun main() {
             ),
             Flatten(),
             Dense(
-                neurons = 64,
+                neurons = 128,
                 activationFunction = ActivationFunction.Relu,
                 learningRate = 0.01,
                 weightsInitializer = { Initializer.random(0.1) }
@@ -52,14 +54,18 @@ fun main() {
     val log = cnn.build()
     log.forEach { println(it) }
 
-    println("I: Start training.")
 
-    val epochs = 20
+    val epochs = 50
+    val dataAmount = 5000
+    println("I: Start training $dataAmount data samples for $epochs epochs.")
+
     val (x, y) = DataLoader.shuffle(xTrain, yTrain, 5000)
+    var predictedLabels = emptyList<Array<Double>>()
     for(epoch in 0 until epochs) {
-        val predictedLabels = cnn.fit(x, y)
-        val accuracy = cnn.accuracy(predictedLabels, y)
+        predictedLabels = cnn.fit(x, y)
+        val accuracy = Evaluation.accuracy(y, predictedLabels)
         println("R: Epoch (${epoch + 1}/$epochs) accuracy ${"%.3f".format(Locale.ENGLISH, accuracy * 100)}%")
     }
+    Evaluation.confusionMatrix(y, predictedLabels)
     ModelSerialization.save(cnn, "balanced_classifier.model")
 }

@@ -174,6 +174,24 @@ class Matrix(
     }
 
     /**
+     * Matrix rotation for full-convolution operation.
+     */
+    fun rotate180degree(): Matrix {
+        val rotated = Array(this.rows) { Array(this.columns) { 0.0 } }
+        for (i in 0 until this.rows) {
+            for (j in 0 until this.columns) {
+                rotated[i][j] = this.data[this.rows - i - 1][this.columns - j - 1]
+            }
+        }
+        return rotated.toMatrix()
+    }
+
+    fun applyForEachRow(operation: (Array<Double>) -> Array<Double>): Matrix {
+        val result = this.data.map { operation.invoke(it) }.toTypedArray()
+        return result.toMatrix()
+    }
+
+    /**
      * Print matrix for a test.
      */
     fun print() {

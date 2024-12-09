@@ -1,4 +1,4 @@
-package com.ertools.common
+package com.ertools.operations
 
 object Error {
     fun dmse(actual: Array<Double>, expected: Array<Double>): Array<Double> {

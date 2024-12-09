@@ -1,6 +1,6 @@
 package com.ertools
 
-import com.ertools.common.Evaluation
+import com.ertools.operations.Evaluation
 import com.ertools.common.Utils
 import com.ertools.io.DataLoader
 import com.ertools.io.ModelSerialization
@@ -16,5 +16,5 @@ fun main() {
         model.predict(it)
     }
 
-    Evaluation.consussionMatrix(y, predictedLabels)
+    Evaluation.confusionMatrix(y, predictedLabels)
 }
