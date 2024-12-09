@@ -30,13 +30,17 @@ class Matrix(
     }
 
     fun asVector(): Array<Double> {
-        require(rows == 1 || columns == 1) { "Matrix must be a vector." }
+        require(rows == 1 || columns == 1) { "Matrix must be a vector. Received $rows rows and $columns columns." }
         if(columns == 1) return this.transpose().data[0]
         return this.data[0]
     }
 
     var data: Array<Array<Double>> = Array(rows) { Array(columns) { initalizer.invoke(it) } }
 
+
+    /**
+     * Flatten orientation determines the order of flattening - by rows (vertical) or by columns (horizontal).
+     */
     fun matrixFlatten(orientation: FlattenOrientation = FlattenOrientation.Horizontal): Matrix {
         if(rows == 1) return this
         if(orientation == FlattenOrientation.Vertical) {
@@ -52,6 +56,10 @@ class Matrix(
         }
     }
 
+    /**
+     * Reverse-flatten operation. Flatten orientation determines the order of flattening - by rows (vertical)
+     * or by columns (horizontal).
+     */
     fun reconstructMatrix(rows: Int, orientation: FlattenOrientation = FlattenOrientation.Horizontal): Matrix {
         val vector = this.asVector()
         val columns = vector.size / rows
@@ -72,8 +80,12 @@ class Matrix(
         }
     }
 
+    /**
+     * Apply padding to the matrix by adding zeros to the borders.
+     */
     fun applyPadding(padding: Int): Matrix {
         require(padding >= 0) { "E: Invalid padding value" }
+        if(padding == 0) return this
         val paddedArray = Array(rows + padding * 2) {
             Array(columns + padding * 2) { 0.0 }
         }
@@ -93,6 +105,17 @@ class Matrix(
                 (0 until this.columns).forEach { k ->
                     result[i][j] += this.data[i][k] * rightMatrix.data[k][j]
                 }
+            }
+        }
+        return result.toMatrix()
+    }
+
+    fun plus(rightMatrix: Matrix): Matrix {
+        require(this.rows == rightMatrix.rows && this.columns == rightMatrix.columns) { "Invalid matrix dimensions" }
+        val result = Array(this.rows) { Array(this.columns) { 0.0 } }
+        (0 until this.rows).forEach { i ->
+            (0 until this.columns).forEach { j ->
+                result[i][j] = this.data[i][j] + rightMatrix.data[i][j]
             }
         }
         return result.toMatrix()
@@ -119,6 +142,9 @@ class Matrix(
         return result.toMatrix()
     }
 
+    /**
+     * Transpose matrix.
+     */
     fun transpose(): Matrix {
         val result = Array(columns) { Array(rows) { 0.0 } }
         (0 until rows).forEach { i ->
@@ -129,9 +155,16 @@ class Matrix(
         return result.toMatrix()
     }
 
+    /**
+     * Slice matrix to a smaller one.
+     */
     fun slice(rowIndices: IntRange, colIndices: IntRange): Matrix {
-        require(rowIndices.first >= 0 && rowIndices.last < rows) { "Invalid row indices" }
-        require(colIndices.first >= 0 && colIndices.last < columns) { "Invalid column indices" }
+        require(rowIndices.first >= 0 && rowIndices.last < rows) {
+            "Invalid row indices. Got ${rowIndices.first}..${rowIndices.last} from matrix with $rows rows."
+        }
+        require(colIndices.first >= 0 && colIndices.last < columns) {
+            "Invalid column indices. Got ${colIndices.first}..${colIndices.last} from matrix with $columns columns."
+        }
         val result = rowIndices.map { rowIndex ->
             colIndices.map { colIndex ->
                 this.data[rowIndex][colIndex]
@@ -140,6 +173,9 @@ class Matrix(
         return result.toMatrix()
     }
 
+    /**
+     * Print matrix for a test.
+     */
     fun print() {
         data.forEach { row ->
             row.forEach { value ->

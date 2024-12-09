@@ -80,4 +80,14 @@ object DataLoader {
             data = data
         )
     }
+
+    fun shuffle(x: ImageSetData, y: LabelSetData): Pair<ImageSetData, LabelSetData> {
+        val shuffledIndices = (0 until x.amount).shuffled()
+        val newX = shuffledIndices.map { x.data[it] }
+        val newY = shuffledIndices.map { y.labels[it] }
+        return Pair(
+            x.copy(data = newX),
+            y.copy(labels = newY)
+        )
+    }
 }

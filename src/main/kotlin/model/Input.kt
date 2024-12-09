@@ -8,13 +8,14 @@ class Input(
 ): Layer() {
     /** API **/
     override fun initialize() {
-        require(nextLayer != null) { "E: Layer has not been bound correctly." }
-        outputHeight = inputHeight
-        outputWidth = inputWidth
+        dimensions = Dimensions(
+            height = inputHeight,
+            width = inputWidth
+        )
     }
 
     override fun response(input: Matrix): Matrix {
-        return input
+        return input.matrixFlatten().transpose()
     }
 
     override fun error(input: Matrix): Matrix {

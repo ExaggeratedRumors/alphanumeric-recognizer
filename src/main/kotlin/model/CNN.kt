@@ -11,7 +11,9 @@ class CNN(
         val log = sequence {
             layers.forEachIndexed { index, layer ->
                 layer.bind(layers.getOrNull(index - 1), layers.getOrNull(index + 1))
-                yield("R: Layer ${layer.javaClass.simpleName} (${layer.outputHeight},${layer.outputWidth}) initialized.")
+                yield("R: Layer ${layer.javaClass.simpleName} " +
+                        "(${layer.dimensions.height},${layer.dimensions.width},${layer.dimensions.channels}," +
+                        "${layer.dimensions.batch}) initialized.")
             }
         }.toList()
         return log

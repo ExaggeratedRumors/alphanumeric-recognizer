@@ -17,18 +17,30 @@ class Conv(
     private var stack: Matrix? = null
 
     override fun initialize() {
-        val filteredMatrixWidth =  (previousLayer!!.outputWidth - kernel) / stride + 1
-        val filteredMatrixHeight = (previousLayer!!.outputHeight - kernel) / stride + 1
-        outputHeight = filteredMatrixHeight * filteredMatrixWidth
-        outputWidth = filtersAmount
+        require(previousLayer != null) { "E: Layer has not been bound." }
+        val prevDimensions = previousLayer!!.dimensions
+        dimensions = Dimensions(
+            height = (prevDimensions.height - kernel) / stride + 1,
+            width = (prevDimensions.width - kernel) / stride + 1,
+            channels = filtersAmount
+        )
         if(filters != null) return
         filters = Matrix(filtersAmount, kernel * kernel) { filtersInitializer.invoke() }
     }
 
+    /**
+     * Rows: Image data
+     * Columns: Filters
+     */
     override fun response(input: Matrix): Matrix {
-        val result = input
-            .applyPadding(padding)
-            .convolution()
+        val filteredImages = input.transpose().data.map { flatImage ->
+            flatImage.toMatrix()
+                .reconstructMatrix(previousLayer!!.dimensions.height)
+                .applyPadding(padding)
+                .convolution()
+        }
+        val result = filteredImages
+            .reduce(Matrix::plus)
             .applyActivationFunction()
         return result
     }
@@ -50,7 +62,8 @@ class Conv(
 
     private fun updateFilters(error: Matrix) {
         require(filters!!.rows == error.rows && filters!!.columns == error.columns) {
-            "E: Weights and error matrix must have the same dimensions."
+            "E: Weights and error matrix must have the same dimensions." +
+                    "\nGot: ${filters!!.rows}x${filters!!.columns} and ${error.rows}x${error.columns}."
         }
         filters = filters!!.minus(error.mul(learningRate))
     }

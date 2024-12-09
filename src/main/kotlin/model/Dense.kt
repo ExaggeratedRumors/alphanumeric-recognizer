@@ -18,10 +18,11 @@ class Dense(
     /** API **/
     override fun initialize() {
         require(previousLayer != null) { "E: Layer has not been bound." }
-        outputHeight = 1
-        outputWidth = neurons
+        dimensions = Dimensions(
+            width = neurons
+        )
         if(weights != null) return
-        weights = Array(neurons) { Array(previousLayer!!.outputWidth) { weightsInitializer.invoke() } }.toMatrix()
+        weights = Array(neurons) { Array(previousLayer!!.dimensions.width) { weightsInitializer.invoke() } }.toMatrix()
     }
 
     override fun response(input: Matrix): Matrix {

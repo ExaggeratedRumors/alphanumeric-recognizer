@@ -2,7 +2,6 @@ package com.ertools.model
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
-import kotlin.math.sqrt
 
 class MaxPool(
     private val poolSize: Int = 2,
@@ -18,24 +17,45 @@ class MaxPool(
     }
 
     override fun initialize() {
-        val filteredMatrixWidth = (sqrt(1.0 * previousLayer!!.outputWidth).toInt() - poolSize) / stride + 1
-        outputWidth = filteredMatrixWidth * filteredMatrixWidth
-        outputHeight = previousLayer!!.outputHeight
+        require(previousLayer != null) { "E: Layer has not been bound." }
+        val prevDimensions = previousLayer!!.dimensions
+        dimensions = Dimensions(
+            height = (prevDimensions.height - poolSize) / stride + 1,
+            width = (prevDimensions.width - poolSize) / stride + 1,
+            channels = prevDimensions.channels,
+            batch = prevDimensions.batch
+        )
     }
 
-    /** Choose max value per each pooled minor and then remember index of this value **/
     override fun response(input: Matrix): Matrix {
         maxValuesIndices.clear()
-        val kernel = sqrt(1.0 * input.columns).toInt()
+        val transposedInput = input.transpose()
+        val result = pooling(transposedInput)
+        return result.transpose()
+    }
 
-        val result = (0 until input.rows).map { filter ->
-            val matrix = input.data[filter].toMatrix().reconstructMatrix(kernel).applyPadding(padding)
+    override fun error(input: Matrix): Matrix {
+        val error = reversePooling(input.transpose())
+        return error.transpose()
+    }
+
+    /*************/
+    /** Private **/
+    /*************/
+
+    /** Choose max value per each pooled minor and then remember index of this value **/
+    private fun pooling(input: Matrix): Matrix =
+        (0 until input.rows).map { filter ->
+            val image = input.data[filter]
+                .toMatrix()
+                .reconstructMatrix(previousLayer!!.dimensions.height)
+                .applyPadding(padding)
             val maxValuesVector = ArrayList<Pair<Int, Int>>()
-            val pooledFilter = (0 until kernel step stride).map { row ->
-                (0 until kernel step stride).map { column ->
-                    val minor = matrix.slice(
-                        IntRange(row, (row + poolSize) - 1),
-                        IntRange(column, (column + poolSize) - 1)
+            val pooledImage = (0 until dimensions.height).map { row ->
+                (0 until dimensions.width).map { column ->
+                    val minor = image.slice(
+                        IntRange(row * stride, row * stride + poolSize - 1),
+                        IntRange(column * stride, column * stride + poolSize - 1)
                     )
                     var maxIndex: Pair<Int, Int> = Pair(0, 0)
                     var maxValue = minor.data[0][0]
@@ -52,24 +72,21 @@ class MaxPool(
                 }.toTypedArray()
             }.toTypedArray().toMatrix().matrixFlatten().asVector()
             maxValuesIndices.add(maxValuesVector)
-            pooledFilter
+            pooledImage
         }.toTypedArray().toMatrix()
-        return result
-    }
 
-    override fun error(input: Matrix): Matrix {
-        val kernelSize = sqrt(1.0 * previousLayer!!.outputWidth).toInt()
-        val poolingOutputSize = sqrt(1.0 * outputWidth).toInt()
+
+    private fun reversePooling(input: Matrix): Matrix {
+        require(maxValuesIndices.isNotEmpty()) { "E: No max values indices found." }
         val error: ArrayList<Array<Double>> = ArrayList()
-
         input.data.forEachIndexed{ i, flatten ->
             /** Non-indexed values are zeros **/
-            val filter = Array(kernelSize) { Array(kernelSize) { 0.0 } }
-            val pool = flatten.toMatrix().reconstructMatrix(poolingOutputSize).matrixFlatten().asVector()
+            val image = Array(previousLayer!!.dimensions.height) { Array(previousLayer!!.dimensions.width) { 0.0 } }
+            val pool = flatten.toMatrix().reconstructMatrix(dimensions.height).matrixFlatten().asVector()
             maxValuesIndices[i].forEachIndexed { j, pair ->
-                filter[pair.first][pair.second] = pool[j]
+                image[pair.first][pair.second] = pool[j]
             }
-            error.add(filter.toMatrix().matrixFlatten().asVector())
+            error.add(image.toMatrix().matrixFlatten().asVector())
         }
         return error.toTypedArray().toMatrix()
     }

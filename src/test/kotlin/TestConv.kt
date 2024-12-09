@@ -1,6 +1,7 @@
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
 import com.ertools.model.Conv
+import com.ertools.model.Input
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -12,7 +13,7 @@ class TestConv {
             arrayOf(9.5, 0.8, 1.3),
             arrayOf(9.9, 0.8, 0.5),
             arrayOf(9.0, 0.9, 1.0)
-        ).toMatrix()
+        ).toMatrix().matrixFlatten().transpose()
 
         val kernel = arrayOf(
             arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
@@ -25,6 +26,8 @@ class TestConv {
         )
 
         val conv = Conv(2, 3, 1, 0)
+        conv.bind(Input(4, 3).apply { initialize() })
+
         conv.loadFilters(kernel)
         val outputMatrix = conv.response(inputMatrix)
 
@@ -43,6 +46,7 @@ class TestConv {
             filtersAmount = 2,
             learningRate = 0.01
         )
+        conv.bind(Input(4, 3).apply { initialize() })
         val filters = arrayOf(
             arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
             arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
@@ -55,7 +59,7 @@ class TestConv {
             arrayOf(9.5, 0.8, 1.3),
             arrayOf(9.9, 0.8, 0.5),
             arrayOf(9.0, 0.9, 1.0)
-        ).toMatrix()
+        ).toMatrix().matrixFlatten().transpose()
         conv.response(inputMatrix)
 
 
@@ -86,6 +90,7 @@ class TestConv {
             filtersAmount = 2,
             learningRate = 0.01
         )
+        conv.bind(Input(4, 3).apply { initialize() })
         val filters = arrayOf(
             arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
             arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
@@ -98,7 +103,7 @@ class TestConv {
             arrayOf(9.5, 0.8, 1.3),
             arrayOf(9.9, 0.8, 0.5),
             arrayOf(9.0, 0.9, 1.0)
-        ).toMatrix()
+        ).toMatrix().matrixFlatten().transpose()
         conv.response(inputMatrix)
 
         /** 3. Error **/

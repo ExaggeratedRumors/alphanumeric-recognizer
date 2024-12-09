@@ -15,9 +15,14 @@ import java.io.Serializable
     JsonSubTypes.Type(value = Dropout::class, name = "Dropout")
 )
 abstract class Layer : Serializable {
-    var outputHeight: Int = 0
-        protected set
-    var outputWidth: Int = 0
+    class Dimensions(
+        val height: Int = 1,
+        val width: Int = 1,
+        val channels: Int = 1,
+        val batch: Int = 1
+    )
+
+    var dimensions: Dimensions = Dimensions()
         protected set
     @JsonIgnore
     var previousLayer: Layer? = null

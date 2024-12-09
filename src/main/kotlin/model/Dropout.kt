@@ -13,8 +13,8 @@ class Dropout(
     }
 
     override fun initialize() {
-        outputHeight = previousLayer!!.outputHeight
-        outputWidth = previousLayer!!.outputWidth
+        require(previousLayer != null) { "E: Layer has not been bound." }
+        dimensions = previousLayer!!.dimensions
     }
 
     override fun response(input: Matrix): Matrix {
