@@ -81,6 +81,22 @@ class Conv(
         return vectorizedFilters.dot(filters!!.transpose())
     }
 
+    fun Matrix.deconvolution(inputKernel: Array<Double>): Array<Array<Double>> {
+        val filter = inputKernel.toMatrix().reconstructMatrix(kernel)
+        val input = Array(previousLayer!!.dimensions.height) { Array(previousLayer!!.dimensions.width) { 0.0 } }
+        for (i in 0 until rows) {
+            for (j in 0 until columns) {
+                val value = this.data[i][j]
+                for (ki in 0 until kernel) {
+                    for (kj in 0 until kernel) {
+                        input[i + ki][j + kj] += value * filter.data[0][ki * kernel + kj]
+                    }
+                }
+            }
+        }
+        return input
+    }
+
     private fun Matrix.vectorize(rowIndex: Int, columnIndex: Int): Array<Double> =
         this.slice(
             IntRange(rowIndex, rowIndex + kernel - 1),

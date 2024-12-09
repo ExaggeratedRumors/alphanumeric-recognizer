@@ -15,7 +15,7 @@ class TestConv {
             arrayOf(9.0, 0.9, 1.0)
         ).toMatrix().matrixFlatten().transpose()
 
-        val kernel = arrayOf(
+        val filters = arrayOf(
             arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
             arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
         ).toMatrix()
@@ -28,7 +28,7 @@ class TestConv {
         val conv = Conv(2, 3, 1, 0)
         conv.bind(Input(4, 3).apply { initialize() })
 
-        conv.loadFilters(kernel)
+        conv.loadFilters(filters)
         val outputMatrix = conv.response(inputMatrix)
 
         outputMatrix.data.forEachIndexed { i, row ->

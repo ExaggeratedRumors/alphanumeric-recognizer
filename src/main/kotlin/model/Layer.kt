@@ -12,7 +12,8 @@ import java.io.Serializable
     JsonSubTypes.Type(value = Conv::class, name = "Conv"),
     JsonSubTypes.Type(value = Flatten::class, name = "Flatten"),
     JsonSubTypes.Type(value = Dense::class, name = "Dense"),
-    JsonSubTypes.Type(value = Dropout::class, name = "Dropout")
+    JsonSubTypes.Type(value = Dropout::class, name = "Dropout"),
+    JsonSubTypes.Type(value = MaxPool::class, name = "MaxPool")
 )
 abstract class Layer : Serializable {
     class Dimensions(
