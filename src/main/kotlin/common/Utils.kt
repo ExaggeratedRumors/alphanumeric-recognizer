@@ -12,6 +12,7 @@ object Utils {
     const val TEST_LABEL_BALANCED_DATA_FILENAME = "emnist-balanced-test-labels-idx1-ubyte"
     const val TEST_IMAGE_BALANCED_DATA_FILENAME = "emnist-balanced-test-images-idx3-ubyte"
 
+    const val LABELS_BALANCED_DICTIONARY = "data/emnist-balanced-mapping.txt"
     /** Models **/
     const val MODELS_PATH = "models"
 }

@@ -1,9 +1,11 @@
 package com.ertools.operations
 
+import com.ertools.io.LabelsMapper
+
 object Evaluation
 {
     fun confusionMatrix(trueLabels: List<Array<Double>>, predictedLabels: List<Array<Double>>) {
-        val classes = (0 until trueLabels[0].size).toList()
+        val classes = LabelsMapper.loadLabels ((0 until trueLabels[0].size).toList())
         val confusionMatrix = Array(classes.size) { IntArray(classes.size) }
         for(i in trueLabels.indices) {
             val predictedLabel = predictedLabels[i].indexOf(predictedLabels[i].maxOf { it })

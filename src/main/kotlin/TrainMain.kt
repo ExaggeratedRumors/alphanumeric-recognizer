@@ -37,10 +37,13 @@ fun main() {
             ),
             Flatten(),
             Dense(
-                neurons = 128,
+                neurons = 64,
                 activationFunction = ActivationFunction.Relu,
                 learningRate = 0.01,
                 weightsInitializer = { Initializer.random(0.1) }
+            ),
+            Dropout(
+                factor = 0.25
             ),
             Dense(
                 neurons = yTest.labelsAmount,
@@ -59,7 +62,7 @@ fun main() {
     val dataAmount = 5000
     println("I: Start training $dataAmount data samples for $epochs epochs.")
 
-    val (x, y) = DataLoader.shuffle(xTrain, yTrain, 5000)
+    val (x, y) = DataLoader.shuffle(xTrain, yTrain, dataAmount)
     var predictedLabels = emptyList<Array<Double>>()
     for(epoch in 0 until epochs) {
         predictedLabels = cnn.fit(x, y)
@@ -67,5 +70,5 @@ fun main() {
         println("R: Epoch (${epoch + 1}/$epochs) accuracy ${"%.3f".format(Locale.ENGLISH, accuracy * 100)}%")
     }
     Evaluation.confusionMatrix(y, predictedLabels)
-    ModelSerialization.save(cnn, "balanced_classifier.model")
+    ModelSerialization.save(cnn, "balanced_50e_1c_2d.model")
 }

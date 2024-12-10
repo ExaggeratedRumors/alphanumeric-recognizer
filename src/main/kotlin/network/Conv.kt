@@ -49,7 +49,7 @@ class Conv(
     override fun error(input: Matrix): Matrix {
         val error = input
             .transpose()
-            .applyForEachRow { activationFunction.invoke(it, derivative = true) }
+            //.applyForEachRow { activationFunction.invoke(it, derivative = true) }
             .dot(stack!!)
         updateFilters(error)
         return error
