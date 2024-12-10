@@ -6,7 +6,7 @@ import java.io.File
 object LabelsMapper {
     fun loadLabels(labels: List<Int>): List<Char> {
         val mappingFile = File(Utils.LABELS_BALANCED_DICTIONARY)
-        val mapping = mappingFile.readLines().map { it.split(" ")[1].toInt().digitToChar() }
+        val mapping = mappingFile.readLines().map { it.split(" ")[1].toInt().toChar() }
         return labels.map { mapping[it] }
     }
 }
