@@ -6,22 +6,52 @@ import com.sun.net.httpserver.HttpHandler
 class ServerHandler: HttpHandler {
     override fun handle(exchange: HttpExchange) {
         try {
-            val requestURI = exchange.requestURI.toString()
-            val filesIds = requestURI
-                .trim('/')
-                .split("_")
-                .mapNotNull { it.toIntOrNull() }
-                .distinct()
-            if (filesIds.isEmpty()) generateErrorResponse()
-            val data = getData(filesIds)
-            val response = if (data == null) generateErrorResponse()
-            else generateResponse(data)
-
-            exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
-            exchange.responseBody.use { it.write(response.toByteArray()) }
+            when(exchange.requestMethod) {
+                "GET" -> serviceGet(exchange)
+                "POST" -> servicePost(exchange)
+                "DELETE" -> serviceDelete(exchange)
+                "PUT" -> servicePut(exchange)
+                "PATCH" -> servicePatch(exchange)
+                else -> generateErrorResponse()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    /*************/
+    /** Private **/
+    /*************/
+    private fun servicePost(exchange: HttpExchange) {
+        TODO()
+    }
+
+    private fun serviceGet(exchange: HttpExchange) {
+        val requestURI = exchange.requestURI.toString()
+        val filesIds = requestURI
+            .trim('/')
+            .split("_")
+            .mapNotNull { it.toIntOrNull() }
+            .distinct()
+        if (filesIds.isEmpty()) generateErrorResponse()
+        val data = getData(filesIds)
+        val response = if (data == null) generateErrorResponse()
+        else generateResponse(data)
+
+        exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
+        exchange.responseBody.use { it.write(response.toByteArray()) }
+    }
+
+    private fun serviceDelete(exchange: HttpExchange) {
+        TODO()
+    }
+
+    private fun servicePut(exchange: HttpExchange) {
+        TODO()
+    }
+
+    private fun servicePatch(exchange: HttpExchange) {
+        TODO()
     }
 
     private fun getData(ids: List<Int>): List<Pair<String, Int>>? {
