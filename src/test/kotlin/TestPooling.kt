@@ -1,8 +1,8 @@
 import com.ertools.common.Matrix.Companion.toMatrix
-import com.ertools.model.CNN
-import com.ertools.network.Conv
 import com.ertools.model.Input
 import com.ertools.model.MaxPool
+import com.ertools.network.CNN
+import com.ertools.network.Conv
 import org.junit.jupiter.api.Assertions.assertEquals
 import kotlin.test.Test
 

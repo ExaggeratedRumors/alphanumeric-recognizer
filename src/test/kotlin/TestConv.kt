@@ -130,4 +130,37 @@ class TestConv {
             }
         }
     }
+
+    @Test
+    fun `convolution backpropagation error`() {
+        /** 1. Load filters **/
+        val conv = Conv(
+            filtersAmount = 2,
+            learningRate = 0.01
+        )
+        conv.bind(Input(4, 3).apply { initialize() })
+        val filters = arrayOf(
+            arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
+            arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
+        ).toMatrix()
+        conv.loadFilters(filters)
+
+        /** 2. Response **/
+        val inputMatrix = arrayOf(
+            arrayOf(8.5, 0.65, 1.2),
+            arrayOf(9.5, 0.8, 1.3),
+            arrayOf(9.9, 0.8, 0.5),
+            arrayOf(9.0, 0.9, 1.0)
+        ).toMatrix().matrixFlatten().transpose()
+        conv.response(inputMatrix)
+
+        /** 3. Error **/
+        val inputError = arrayOf(
+            arrayOf(-0.04195, -0.48485),
+            arrayOf(-0.3832, 0.8979)
+        ).toMatrix()
+        val result = conv.error(inputError)
+
+        result.print()
+    }
 }

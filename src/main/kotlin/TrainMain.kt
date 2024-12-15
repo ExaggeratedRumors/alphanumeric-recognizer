@@ -6,6 +6,7 @@ import com.ertools.common.Utils
 import com.ertools.io.DataLoader
 import com.ertools.io.ModelSerialization
 import com.ertools.model.*
+import com.ertools.network.CNN
 import com.ertools.network.Conv
 import com.ertools.network.Dropout
 import com.ertools.network.Flatten

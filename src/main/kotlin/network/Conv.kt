@@ -16,7 +16,7 @@ class Conv(
     private val activationFunction: ActivationFunction = ActivationFunction.Linear
 ): Layer() {
     private var filters: Matrix? = null
-    private var stack: Matrix? = null
+    private var vectorizedImagesStack: Matrix? = null
 
     override fun initialize() {
         require(previousLayer != null) { "E: Layer has not been bound." }
@@ -35,6 +35,7 @@ class Conv(
      * Columns: Filters
      */
     override fun response(input: Matrix): Matrix {
+        this.vectorizedImagesStack = null
         val filteredImages = input.transpose().data.map { flatImage ->
             flatImage.toMatrix()
                 .reconstructMatrix(previousLayer!!.dimensions.height)
@@ -55,15 +56,17 @@ class Conv(
         val error = input.transpose()
             //.applyForEachRow { activationFunction.invoke(it, derivative = true) }
 
-        val kernelError = error.dot(stack!!)
+        val kernelError = error.dot(vectorizedImagesStack!!)
         updateFilters(kernelError)
 
-        val inputError = error.data.forEach { flatError ->
+        val inputError = error.data.map { flatError ->
             flatError.toMatrix()
                 .reconstructMatrix(dimensions.height)
                 .convolutionError()
         }
-        return error.convolutionError()
+        val resultError = inputError
+            .reduce(Matrix::plus)
+        return resultError
     }
 
 
@@ -92,12 +95,14 @@ class Conv(
             .flatten()
             .toTypedArray()
             .toMatrix()
-        stack = vectorizedImage
+        vectorizedImagesStack = if(vectorizedImagesStack == null) vectorizedImage
+                else vectorizedImagesStack!!.plus(vectorizedImage)
         return vectorizedImage.dot(filters!!.transpose())
     }
 
     private fun Matrix.convolutionError(): Matrix {
-        val paddedMatrix = this.applyPadding(1)
+        val padding = (this.rows - 1) * stride + kernel - this.rows
+        val paddedMatrix = this.applyPadding(padding)
 
         val rotatedKernels = filters!!.data.map {
             it.toMatrix().rotate180degree().matrixFlatten().asVector()

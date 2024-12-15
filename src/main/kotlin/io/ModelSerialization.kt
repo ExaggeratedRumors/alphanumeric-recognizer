@@ -1,7 +1,7 @@
 package com.ertools.io
 
 import com.ertools.common.Utils
-import com.ertools.model.CNN
+import com.ertools.network.CNN
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker
