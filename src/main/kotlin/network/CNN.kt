@@ -1,8 +1,9 @@
-package com.ertools.model
+package com.ertools.network
 
 import com.ertools.operations.Error.dmse
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
+import com.ertools.model.Layer
 
 class CNN(
     private val layers: List<Layer>

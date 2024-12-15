@@ -1,7 +1,8 @@
-package com.ertools.model
+package com.ertools.network
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
+import com.ertools.model.Layer
 
 class Dropout(
     private val factor: Double
@@ -17,6 +18,10 @@ class Dropout(
         dimensions = previousLayer!!.dimensions
     }
 
+    /**
+     * Rows: 1
+     * Columns: Image data
+     */
     override fun response(input: Matrix): Matrix {
         val flatten = input.matrixFlatten().asVector()
         val expiredNeuronsAmount = (flatten.size * factor).toInt()
@@ -31,6 +36,10 @@ class Dropout(
         return flatten.toMatrix().reconstructMatrix(input.rows)
     }
 
+    /**
+     * Rows: 1
+     * Columns: Image data
+     */
     override fun error(input: Matrix): Matrix {
         require(indices != null) { "E: Response must be called before error." }
         val flatten = input.matrixFlatten().asVector()

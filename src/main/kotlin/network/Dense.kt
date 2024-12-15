@@ -26,12 +26,20 @@ class Dense(
         weights = Array(neurons) { Array(previousLayer!!.dimensions.width) { weightsInitializer.invoke() } }.toMatrix()
     }
 
+    /**
+     * Rows: 1
+     * Columns: Neurons
+     */
     override fun response(input: Matrix): Matrix {
         stack = input
         val resultVector = weights!!.dot(input.transpose()).asVector()
         return activationFunction.invoke(resultVector).toMatrix()
     }
 
+    /**
+     * Rows: 1
+     * Columns: Neurons
+     */
     override fun error(input: Matrix): Matrix {
         val error = weights!!
             .transpose()

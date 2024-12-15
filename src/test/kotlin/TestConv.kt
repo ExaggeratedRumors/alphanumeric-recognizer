@@ -1,6 +1,6 @@
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
-import com.ertools.model.Conv
+import com.ertools.network.Conv
 import com.ertools.model.Input
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

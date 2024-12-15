@@ -1,12 +1,8 @@
 import com.ertools.common.Matrix.Companion.toMatrix
 import com.ertools.io.ModelSerialization
 import com.ertools.model.*
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker
-import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.ertools.network.Conv
+import com.ertools.network.Flatten
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

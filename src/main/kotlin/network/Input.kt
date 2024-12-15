@@ -14,10 +14,18 @@ class Input(
         )
     }
 
+    /**
+     * Rows: Image data
+     * Columns: Channels
+     */
     override fun response(input: Matrix): Matrix {
         return input.matrixFlatten().transpose()
     }
 
+    /**
+     * Rows: Image data
+     * Columns: Channels
+     */
     override fun error(input: Matrix): Matrix {
         return input
     }

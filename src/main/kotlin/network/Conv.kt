@@ -1,7 +1,8 @@
-package com.ertools.model
+package com.ertools.network
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
+import com.ertools.model.Layer
 import com.ertools.operations.ActivationFunction
 import com.fasterxml.jackson.annotation.JsonIgnore
 
@@ -46,13 +47,23 @@ class Conv(
         return result
     }
 
+    /**
+     * Rows: Image data
+     * Columns: Filters
+     */
     override fun error(input: Matrix): Matrix {
-        val error = input
-            .transpose()
+        val error = input.transpose()
             //.applyForEachRow { activationFunction.invoke(it, derivative = true) }
-            .dot(stack!!)
-        updateFilters(error)
-        return error
+
+        val kernelError = error.dot(stack!!)
+        updateFilters(kernelError)
+
+        val inputError = error.data.forEach { flatError ->
+            flatError.toMatrix()
+                .reconstructMatrix(dimensions.height)
+                .convolutionError()
+        }
+        return error.convolutionError()
     }
 
 
@@ -73,7 +84,7 @@ class Conv(
     }
 
     private fun Matrix.convolution(): Matrix {
-        val vectorizedFilters = (0..this.rows - kernel step stride).map { row ->
+        val vectorizedImage = (0..this.rows - kernel step stride).map { row ->
                 (0..this.columns - kernel step stride).map { column ->
                     this.vectorize(row, column)
                 }
@@ -81,16 +92,27 @@ class Conv(
             .flatten()
             .toTypedArray()
             .toMatrix()
-        stack = vectorizedFilters
-        return vectorizedFilters.dot(filters!!.transpose())
+        stack = vectorizedImage
+        return vectorizedImage.dot(filters!!.transpose())
     }
 
-    private fun Matrix.fullConvolution(): Matrix {
-        val rotatedKernels = filters!!.data.map {
-            it.toMatrix().rotate180degree()
-        }.toList()
+    private fun Matrix.convolutionError(): Matrix {
+        val paddedMatrix = this.applyPadding(1)
 
-        TODO("Full convolution not implemented yet.")
+        val rotatedKernels = filters!!.data.map {
+            it.toMatrix().rotate180degree().matrixFlatten().asVector()
+        }.toTypedArray().toMatrix()
+
+        val vectorizedErrorImage = (0..paddedMatrix.rows - kernel step stride).map { row ->
+                (0..paddedMatrix.columns - kernel step stride).map { column ->
+                    paddedMatrix.vectorize(row, column)
+                }
+            }
+            .flatten()
+            .toTypedArray()
+            .toMatrix()
+
+        return vectorizedErrorImage.dot(rotatedKernels.transpose())
     }
 
     private fun Matrix.vectorize(rowIndex: Int, columnIndex: Int): Array<Double> =

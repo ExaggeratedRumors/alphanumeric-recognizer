@@ -1,6 +1,7 @@
-package com.ertools.model
+package com.ertools.network
 
 import com.ertools.common.Matrix
+import com.ertools.model.Layer
 
 
 class Flatten : Layer() {
@@ -14,10 +15,18 @@ class Flatten : Layer() {
         )
     }
 
+    /**
+     * Input: rows (image data), columns (filters)
+     * Output: rows (1), columns (image data)
+     */
     override fun response(input: Matrix): Matrix {
         return input.matrixFlatten()
     }
 
+    /**
+     * Input: rows (1), columns (image data)
+     * Output: rows (image data), columns (filters)
+     */
     override fun error(input: Matrix): Matrix {
         return input.reconstructMatrix(previousLayer!!.dimensions.height * previousLayer!!.dimensions.width)
     }

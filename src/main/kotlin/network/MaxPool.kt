@@ -27,6 +27,10 @@ class MaxPool(
         )
     }
 
+    /**
+     * Rows: Pooled image data
+     * Columns: Filters
+     */
     override fun response(input: Matrix): Matrix {
         maxValuesIndices.clear()
         val transposedInput = input.transpose()
@@ -34,6 +38,10 @@ class MaxPool(
         return result.transpose()
     }
 
+    /**
+     * Rows: Pooled image data
+     * Columns: Filters
+     */
     override fun error(input: Matrix): Matrix {
         val error = reversePooling(input.transpose())
         return error.transpose()
