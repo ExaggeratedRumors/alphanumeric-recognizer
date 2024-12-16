@@ -15,8 +15,8 @@ class Conv(
     @JsonIgnore private val filtersInitializer: () -> (Double) = { 0.0 },
     private val activationFunction: ActivationFunction = ActivationFunction.Linear
 ): Layer() {
-    private var filters: Matrix? = null
-    private var vectorizedImagesStack: Matrix? = null
+    private var filters: Array<Matrix> = emptyArray()
+    private var vectorizedImages: Array<Matrix> = emptyArray()
 
     override fun initialize() {
         require(previousLayer != null) { "E: Layer has not been bound." }
@@ -26,8 +26,18 @@ class Conv(
             width = (prevDimensions.width - kernel) / stride + 1,
             channels = filtersAmount
         )
-        if(filters != null) return
-        filters = Matrix(filtersAmount, kernel * kernel) { filtersInitializer.invoke() }
+        if(filters.isNotEmpty()) return
+
+        /**
+         * Depth: Input channels
+         * Rows: Filters
+         * Columns: Kernel weights
+         */
+        filters = Array(prevDimensions.channels) {
+            Matrix(filtersAmount, kernel * kernel) {
+                filtersInitializer.invoke()
+            }
+        }
     }
 
     /**
@@ -35,12 +45,12 @@ class Conv(
      * Columns: Filters
      */
     override fun response(input: Matrix): Matrix {
-        this.vectorizedImagesStack = null
-        val filteredImages = input.transpose().data.map { flatImage ->
+        this.vectorizedImages = Array(filters.size) { Matrix() }
+        val filteredImages = input.transpose().data.mapIndexed { channelIndex, flatImage ->
             flatImage.toMatrix()
                 .reconstructMatrix(previousLayer!!.dimensions.height)
                 .applyPadding(padding)
-                .convolution()
+                .convolution(channelIndex)
         }
         val result = filteredImages
             .reduce(Matrix::plus)
@@ -56,13 +66,12 @@ class Conv(
         val error = input.transpose()
             //.applyForEachRow { activationFunction.invoke(it, derivative = true) }
 
-        val kernelError = error.dot(vectorizedImagesStack!!)
-        updateFilters(kernelError)
+        updateFilters(error)
 
-        val inputError = error.data.map { flatError ->
+        val inputError = error.data.mapIndexed { channelIndex, flatError ->
             flatError.toMatrix()
                 .reconstructMatrix(dimensions.height)
-                .convolutionError()
+                .convolutionError(channelIndex)
         }
         val resultError = inputError
             .reduce(Matrix::plus)
@@ -70,7 +79,7 @@ class Conv(
     }
 
 
-    fun loadFilters(filters: Matrix) {
+    fun loadFilters(filters: Array<Matrix>) {
         this.filters = filters
     }
 
@@ -79,14 +88,18 @@ class Conv(
     /*************/
 
     private fun updateFilters(error: Matrix) {
-        require(filters!!.rows == error.rows && filters!!.columns == error.columns) {
-            "E: Weights and error matrix must have the same dimensions." +
-                    "\nGot: ${filters!!.rows}x${filters!!.columns} and ${error.rows}x${error.columns}."
-        }
-        filters = filters!!.minus(error.mul(learningRate))
+        filters = filters.mapIndexed { i, channelFilters ->
+            val filterError = error.dot(vectorizedImages[i])
+            require(channelFilters.rows == filterError.rows && channelFilters.columns == filterError.columns) {
+                "E: Weights and error matrix must have the same dimensions." +
+                        "\nGot: ${channelFilters.rows}x${channelFilters.columns}" +
+                        " and ${filterError.rows}x${filterError.columns}."
+            }
+            channelFilters.minus(filterError.mul(learningRate))
+        }.toTypedArray()
     }
 
-    private fun Matrix.convolution(): Matrix {
+    private fun Matrix.convolution(channelIndex: Int): Matrix {
         val vectorizedImage = (0..this.rows - kernel step stride).map { row ->
                 (0..this.columns - kernel step stride).map { column ->
                     this.vectorize(row, column)
@@ -95,16 +108,24 @@ class Conv(
             .flatten()
             .toTypedArray()
             .toMatrix()
-        vectorizedImagesStack = if(vectorizedImagesStack == null) vectorizedImage
-                else vectorizedImagesStack!!.plus(vectorizedImage)
-        return vectorizedImage.dot(filters!!.transpose())
+        vectorizedImages[channelIndex] = vectorizedImages[channelIndex].plus(vectorizedImage)
+        return vectorizedImage.dot(filters[channelIndex].transpose())
     }
 
-    private fun Matrix.convolutionError(): Matrix {
+    private fun Matrix.convolutionError(filterIndex: Int): Matrix {
         val padding = (this.rows - 1) * stride + kernel - this.rows
         val paddedMatrix = this.applyPadding(padding)
 
-        val rotatedKernels = filters!!.data.map {
+        /*
+         * Map INPUT_CHANNELS x DATA x FILTER_CHANNELS
+         * to
+         * FILTER_CHANNELS x DATA
+         */
+        val filterChannels = filters.map {
+            it.data[filterIndex]
+        }.toTypedArray().toMatrix()
+
+        val rotatedKernels = filterChannels.data.map {
             it.toMatrix().rotate180degree().matrixFlatten().asVector()
         }.toTypedArray().toMatrix()
 

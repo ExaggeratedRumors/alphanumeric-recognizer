@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 
 
 class Matrix(
-    val rows: Int,
-    val columns: Int,
+    val rows: Int = 1,
+    val columns: Int = 1,
     @JsonIgnore private val initalizer: (Int) -> (Double) = { 0.0 }
 ) {
     enum class FlattenOrientation {
