@@ -21,3 +21,18 @@ tasks.test {
 kotlin {
     jvmToolchain(20)
 }
+
+fun createTask(taskName: String, mainClassName: String) {
+    tasks.register<JavaExec>(taskName) {
+        group = "model tasks"
+        description = "Run $mainClassName"
+        mainClass.set(mainClassName)
+        classpath = sourceSets["main"].runtimeClasspath
+        workingDir = file("$rootDir")
+    }
+}
+
+createTask("runServer", "com.ertools.RunServerMainKt")
+createTask("trainModel", "com.ertools.TrainModelMainKt")
+createTask("testModel", "com.ertools.TestModelMainKt")
+/* createTask("predict", "com.ertools.model.PredictMainKt") */
