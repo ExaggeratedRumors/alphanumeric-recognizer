@@ -33,7 +33,7 @@ class TestCNN {
                     arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
                     arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
                 ).toMatrix()
-                loadFilters(filters)
+                loadFilters(arrayOf(filters))
             },
             Flatten(),
             Dense(2).apply {
@@ -74,7 +74,7 @@ class TestCNN {
                     arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
                     arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
                 ).toMatrix()
-                loadFilters(filters)
+                loadFilters(arrayOf(filters))
             },
             Flatten(),
             Dense(2).apply {

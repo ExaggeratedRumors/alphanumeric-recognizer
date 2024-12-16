@@ -28,7 +28,7 @@ class TestConv {
         val conv = Conv(2, 3, 1, 0)
         conv.bind(Input(4, 3).apply { initialize() })
 
-        conv.loadFilters(filters)
+        conv.loadFilters(arrayOf(filters))
         val outputMatrix = conv.response(inputMatrix)
 
         outputMatrix.data.forEachIndexed { i, row ->
@@ -51,7 +51,7 @@ class TestConv {
             arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
             arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
         ).toMatrix()
-        conv.loadFilters(filters)
+        conv.loadFilters(arrayOf(filters))
 
 
         val inputMatrix = arrayOf(
@@ -95,7 +95,7 @@ class TestConv {
             arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
             arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
         ).toMatrix()
-        conv.loadFilters(filters)
+        conv.loadFilters(arrayOf(filters))
 
         /** 2. Response **/
         val inputMatrix = arrayOf(
@@ -143,7 +143,7 @@ class TestConv {
             arrayOf(0.1, 0.2, -0.1, -0.1, 0.1, 0.9, 0.1, 0.4, 0.1),
             arrayOf(0.3, 1.1, -0.3, 0.1, 0.2, 0.0, 0.0, 1.3, 0.1)
         ).toMatrix()
-        conv.loadFilters(filters)
+        conv.loadFilters(arrayOf(filters))
 
         /** 2. Response **/
         val inputMatrix = arrayOf(
@@ -159,7 +159,7 @@ class TestConv {
             arrayOf(-0.04195, -0.48485),
             arrayOf(-0.3832, 0.8979)
         ).toMatrix()
-        val result = conv.error(inputError)
+        val result = conv.error(inputError).reconstructMatrix(4)
 
         result.print()
     }

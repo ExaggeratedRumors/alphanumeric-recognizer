@@ -16,7 +16,7 @@ class Conv(
     private val activationFunction: ActivationFunction = ActivationFunction.Linear
 ): Layer() {
     private var filters: Array<Matrix> = emptyArray()
-    private var vectorizedImages: Array<Matrix> = emptyArray()
+    private var vectorizedImages: Array<Matrix?> = emptyArray()
 
     override fun initialize() {
         require(previousLayer != null) { "E: Layer has not been bound." }
@@ -45,7 +45,7 @@ class Conv(
      * Columns: Filters
      */
     override fun response(input: Matrix): Matrix {
-        this.vectorizedImages = Array(filters.size) { Matrix() }
+        this.vectorizedImages = Array(filters.size) { null }
         val filteredImages = input.transpose().data.mapIndexed { channelIndex, flatImage ->
             flatImage.toMatrix()
                 .reconstructMatrix(previousLayer!!.dimensions.height)
@@ -89,7 +89,7 @@ class Conv(
 
     private fun updateFilters(error: Matrix) {
         filters = filters.mapIndexed { i, channelFilters ->
-            val filterError = error.dot(vectorizedImages[i])
+            val filterError = error.dot(vectorizedImages[i]!!)
             require(channelFilters.rows == filterError.rows && channelFilters.columns == filterError.columns) {
                 "E: Weights and error matrix must have the same dimensions." +
                         "\nGot: ${channelFilters.rows}x${channelFilters.columns}" +
@@ -108,7 +108,8 @@ class Conv(
             .flatten()
             .toTypedArray()
             .toMatrix()
-        vectorizedImages[channelIndex] = vectorizedImages[channelIndex].plus(vectorizedImage)
+        if(vectorizedImages[channelIndex] == null) vectorizedImages[channelIndex] = vectorizedImage
+        else vectorizedImages[channelIndex] = vectorizedImages[channelIndex]!!.plus(vectorizedImage)
         return vectorizedImage.dot(filters[channelIndex].transpose())
     }
 
