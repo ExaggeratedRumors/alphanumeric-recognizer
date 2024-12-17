@@ -186,8 +186,8 @@ class Matrix(
         return rotated.toMatrix()
     }
 
-    fun applyForEachRow(operation: (Array<Double>) -> Array<Double>): Matrix {
-        val result = this.data.map { operation.invoke(it) }.toTypedArray()
+    fun applyForEachRow(operation: (Int, Array<Double>) -> Array<Double>): Matrix {
+        val result = this.data.mapIndexed { i, v -> operation.invoke(i, v) }.toTypedArray()
         return result.toMatrix()
     }
 

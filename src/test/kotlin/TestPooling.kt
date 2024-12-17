@@ -87,8 +87,11 @@ class TestPooling {
         testCNN.build()
 
         val outputMatrix = maxPool.response(inputMatrix)
+
         val outputError = maxPool.error(outputMatrix).reconstructMatrix(6)
 
+
+        outputError.print()
         expectedInputMatrix.forEachIndexed { j, row ->
             row.forEachIndexed { i, value ->
                 assertEquals(value, outputError.data[j][i], 0.001) {

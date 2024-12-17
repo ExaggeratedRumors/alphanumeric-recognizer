@@ -14,7 +14,8 @@ class Dense(
 
     /** Variables **/
     private var weights: Matrix? = null
-    private var stack: Matrix? = null
+    private var rememberDataVector: Matrix? = null
+    private var rememberDataActivated: Array<Double>? = null
 
     /** API **/
     override fun initialize() {
@@ -31,8 +32,12 @@ class Dense(
      * Columns: Neurons
      */
     override fun response(input: Matrix): Matrix {
-        stack = input
-        val resultVector = weights!!.dot(input.transpose()).asVector()
+        rememberDataVector = input
+        val resultVector = weights!!.dot(input.transpose())
+            .asVector().let { vector ->
+                rememberDataActivated = activationFunction.invoke(vector, derivative = true)
+                activationFunction.invoke(vector)
+            }
         return activationFunction.invoke(resultVector).toMatrix()
     }
 
@@ -43,7 +48,9 @@ class Dense(
     override fun error(input: Matrix): Matrix {
         val error = weights!!
             .transpose()
-            .applyForEachRow { activationFunction.invoke(it, derivative = true) }
+            .applyForEachRow { _, row ->
+                row.zip(rememberDataActivated!!).map{ it.first * it.second }.toTypedArray()
+            }
             .dot(input.transpose())
             .transpose()
 
@@ -60,8 +67,8 @@ class Dense(
     /*************/
 
     private fun updateWeights(input: Matrix) {
-        require (stack != null) { "E: Response must be called before updateWeights." }
-        val error = input.transpose().dot(stack!!)
+        require (rememberDataVector != null) { "E: Response must be called before updateWeights." }
+        val error = input.transpose().dot(rememberDataVector!!)
         require(weights!!.rows == error.rows && weights!!.columns == error.columns) {
             "E: Weights and error matrix must have the same dimensions."
         }

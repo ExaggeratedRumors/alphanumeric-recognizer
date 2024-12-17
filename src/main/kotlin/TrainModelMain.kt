@@ -38,17 +38,6 @@ fun main() {
                 poolSize = 2,
                 stride = 2
             ),
-            Conv(
-                filtersAmount = 32,
-                kernel = 3,
-                activationFunction = ActivationFunction.Relu,
-                learningRate = 0.01,
-                filtersInitializer = { Initializer.random(0.01) }
-            ),
-            MaxPool(
-                poolSize = 2,
-                stride = 2
-            ),
             Flatten(),
             Dense(
                 neurons = yTest.labelsAmount,
@@ -63,7 +52,7 @@ fun main() {
     log.forEach { println(it) }
 
 
-    val epochs = 10
+    val epochs = 50
     val dataAmount = 1000
     println("I: Start training $dataAmount data samples for $epochs epochs.")
 
@@ -75,5 +64,5 @@ fun main() {
         println("R: Epoch (${epoch + 1}/$epochs) accuracy ${"%.3f".format(Locale.ENGLISH, accuracy * 100)}%")
     }
     Evaluation.confusionMatrix(y, predictedLabels)
-    ModelSerialization.save(cnn, "digits_50e_2c_1d.model")
+    ModelSerialization.save(cnn, "digits_50e_2c_2d.model")
 }

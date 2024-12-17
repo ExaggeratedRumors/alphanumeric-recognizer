@@ -71,7 +71,7 @@ class MaxPool(
                         rowValue.forEachIndexed { columnIndex, columnValue ->
                             if (columnValue > maxValue) {
                                 maxValue = columnValue
-                                maxIndex = Pair(row + rowIndex, column + columnIndex)
+                                maxIndex = Pair(row * poolSize + rowIndex, column * poolSize + columnIndex)
                             }
                         }
                     }
