@@ -1,9 +1,7 @@
 package com.ertools.model
 
 import com.ertools.common.Matrix
-import com.ertools.network.Conv
-import com.ertools.network.Dropout
-import com.ertools.network.Flatten
+import com.ertools.network.*
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo

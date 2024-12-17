@@ -5,10 +5,7 @@ import com.ertools.operations.Initializer
 import com.ertools.common.Utils
 import com.ertools.io.DataLoader
 import com.ertools.io.ModelSerialization
-import com.ertools.model.*
-import com.ertools.network.CNN
-import com.ertools.network.Conv
-import com.ertools.network.Flatten
+import com.ertools.network.*
 import com.ertools.operations.ActivationFunction
 import java.util.*
 
@@ -30,7 +27,7 @@ fun main() {
             Conv(
                 filtersAmount = 16,
                 kernel = 3,
-                activationFunction = ActivationFunction.Relu,
+                activationFunction = ActivationFunction.Linear,
                 learningRate = 0.01,
                 filtersInitializer = { Initializer.random(0.01) }
             ),
@@ -64,5 +61,5 @@ fun main() {
         println("R: Epoch (${epoch + 1}/$epochs) accuracy ${"%.3f".format(Locale.ENGLISH, accuracy * 100)}%")
     }
     Evaluation.confusionMatrix(y, predictedLabels)
-    ModelSerialization.save(cnn, "digits_50e_2c_2d.model")
+    ModelSerialization.save(cnn, "digits_50e_1c_1d.model")
 }

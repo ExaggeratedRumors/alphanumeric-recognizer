@@ -1,6 +1,6 @@
 import com.ertools.common.Matrix.Companion.toMatrix
-import com.ertools.model.Input
-import com.ertools.model.MaxPool
+import com.ertools.network.Input
+import com.ertools.network.MaxPool
 import com.ertools.network.CNN
 import com.ertools.network.Conv
 import org.junit.jupiter.api.Assertions.assertEquals

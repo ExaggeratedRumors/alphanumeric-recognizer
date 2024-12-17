@@ -17,7 +17,7 @@ class Conv(
 ): Layer() {
     private var filters: Array<Matrix> = emptyArray()
     private var rememberVectorizedImages: Array<Matrix?> = emptyArray()
-    private var rememberActivatedResponse: Array<Array<Double>?> = emptyArray()
+    private var rememberDerivativeActivation: Array<Array<Double>?> = emptyArray()
 
     override fun initialize() {
         require(previousLayer != null) { "E: Layer has not been bound." }
@@ -48,7 +48,7 @@ class Conv(
     override fun response(input: Matrix): Matrix {
         /** Reset remembered data **/
         this.rememberVectorizedImages = Array(filters.size) { null }
-        this.rememberActivatedResponse = Array(dimensions.height) { null }
+        this.rememberDerivativeActivation = Array(dimensions.channels) { null }
 
         /** Make convolution for each image **/
         val filteredImagesByChannel = input.transpose().data.mapIndexed { channelIndex, flatImage ->
@@ -61,10 +61,12 @@ class Conv(
         /** Sum filtered images for each channel **/
         val result = filteredImagesByChannel
             .reduce(Matrix::plus)
+            .transpose()
             .applyForEachRow { i, row ->
-                rememberActivatedResponse[i] = activationFunction.invoke(row, true)
+                rememberDerivativeActivation[i] = activationFunction.invoke(row, true)
                 activationFunction.invoke(row)
             }
+            .transpose()
         return result
     }
 
@@ -75,7 +77,7 @@ class Conv(
     override fun error(input: Matrix): Matrix {
         val error = input.transpose()
             .applyForEachRow { i, row ->
-                row.zip(rememberActivatedResponse[i]!!).map { it.first * it.second }.toTypedArray()
+                row.zip(rememberDerivativeActivation[i]!!).map { it.first * it.second }.toTypedArray()
             }
 
         updateFilters(error)

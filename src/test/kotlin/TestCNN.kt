@@ -1,9 +1,6 @@
 import com.ertools.common.Matrix.Companion.toMatrix
 import com.ertools.io.ModelSerialization
-import com.ertools.model.*
-import com.ertools.network.CNN
-import com.ertools.network.Conv
-import com.ertools.network.Flatten
+import com.ertools.network.*
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

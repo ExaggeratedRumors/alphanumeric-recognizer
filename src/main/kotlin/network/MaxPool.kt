@@ -1,7 +1,8 @@
-package com.ertools.model
+package com.ertools.network
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
+import com.ertools.model.Layer
 
 class MaxPool(
     private val poolSize: Int = 2,

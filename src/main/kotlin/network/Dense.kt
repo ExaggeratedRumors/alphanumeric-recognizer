@@ -1,7 +1,8 @@
-package com.ertools.model
+package com.ertools.network
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
+import com.ertools.model.Layer
 import com.ertools.operations.ActivationFunction
 import com.fasterxml.jackson.annotation.JsonIgnore
 
@@ -14,8 +15,8 @@ class Dense(
 
     /** Variables **/
     private var weights: Matrix? = null
-    private var rememberDataVector: Matrix? = null
-    private var rememberDataActivated: Array<Double>? = null
+    private var rememberInputVector: Matrix? = null
+    private var rememberDerivativeActivation: Array<Double>? = null
 
     /** API **/
     override fun initialize() {
@@ -32,13 +33,15 @@ class Dense(
      * Columns: Neurons
      */
     override fun response(input: Matrix): Matrix {
-        rememberDataVector = input
-        val resultVector = weights!!.dot(input.transpose())
+        rememberInputVector = input
+        val resultVector = weights!!
+            .dot(input.transpose())
             .asVector().let { vector ->
-                rememberDataActivated = activationFunction.invoke(vector, derivative = true)
+                rememberDerivativeActivation = activationFunction.invoke(vector, derivative = true)
                 activationFunction.invoke(vector)
             }
-        return activationFunction.invoke(resultVector).toMatrix()
+            .toMatrix()
+        return resultVector
     }
 
     /**
@@ -46,12 +49,12 @@ class Dense(
      * Columns: Neurons
      */
     override fun error(input: Matrix): Matrix {
+        val activatedInput = input.applyForEachRow { _, row ->
+            row.zip(rememberDerivativeActivation!!).map{ it.first * it.second }.toTypedArray()
+        }
         val error = weights!!
             .transpose()
-            .applyForEachRow { _, row ->
-                row.zip(rememberDataActivated!!).map{ it.first * it.second }.toTypedArray()
-            }
-            .dot(input.transpose())
+            .dot(activatedInput.transpose())
             .transpose()
 
         updateWeights(input)
@@ -67,8 +70,8 @@ class Dense(
     /*************/
 
     private fun updateWeights(input: Matrix) {
-        require (rememberDataVector != null) { "E: Response must be called before updateWeights." }
-        val error = input.transpose().dot(rememberDataVector!!)
+        require (rememberInputVector != null) { "E: Response must be called before updateWeights." }
+        val error = input.transpose().dot(rememberInputVector!!)
         require(weights!!.rows == error.rows && weights!!.columns == error.columns) {
             "E: Weights and error matrix must have the same dimensions."
         }

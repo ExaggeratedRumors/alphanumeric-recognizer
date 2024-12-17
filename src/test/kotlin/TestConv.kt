@@ -1,7 +1,7 @@
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
 import com.ertools.network.Conv
-import com.ertools.model.Input
+import com.ertools.network.Input
 import com.ertools.operations.ActivationFunction
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -121,7 +121,6 @@ class TestConv {
         ).toMatrix()
         val result = conv.error(inputError).reconstructMatrix(4)
 
-        result.print()
         assertEquals(4, result.rows)
         assertEquals(3, result.columns)
     }

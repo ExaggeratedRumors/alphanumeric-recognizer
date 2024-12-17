@@ -1,6 +1,7 @@
-package com.ertools.model
+package com.ertools.network
 
 import com.ertools.common.Matrix
+import com.ertools.model.Layer
 
 class Input(
     private val inputHeight: Int,

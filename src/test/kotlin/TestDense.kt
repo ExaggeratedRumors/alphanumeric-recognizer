@@ -1,6 +1,6 @@
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
-import com.ertools.model.Dense
+import com.ertools.network.Dense
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
