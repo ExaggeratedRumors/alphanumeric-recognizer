@@ -57,7 +57,7 @@ class Dense(
             .dot(activatedInput.transpose())
             .transpose()
 
-        updateWeights(input)
+        updateWeights(activatedInput)
         return error
     }
 

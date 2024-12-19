@@ -6,12 +6,28 @@ import com.sun.net.httpserver.HttpHandler
 class ServerHandler: HttpHandler {
     override fun handle(exchange: HttpExchange) {
         try {
+            val endpoint = getEndpoint(exchange)
             when(exchange.requestMethod) {
-                "GET" -> serviceGet(exchange)
-                "POST" -> servicePost(exchange)
-                "DELETE" -> serviceDelete(exchange)
-                "PUT" -> servicePut(exchange)
-                "PATCH" -> servicePatch(exchange)
+                "GET" -> {
+                    when(endpoint) {
+                        "models" -> serviceGetModels(exchange)
+                        "data" -> serviceGetData(exchange)
+                        else -> generateErrorResponse()
+                    }
+                }
+                "POST" -> {
+                    when(endpoint) {
+                        "train" -> servicePostTrain(exchange)
+                        "classify" -> servicePostClassify(exchange)
+                        else -> generateErrorResponse()
+                    }
+                }
+                "DELETE" -> {
+                    when(endpoint) {
+                        "model" -> serviceDeleteModel(exchange)
+                        else -> generateErrorResponse()
+                    }
+                }
                 else -> generateErrorResponse()
             }
         } catch (e: Exception) {
@@ -22,40 +38,84 @@ class ServerHandler: HttpHandler {
     /*************/
     /** Private **/
     /*************/
-    private fun servicePost(exchange: HttpExchange) {
-        TODO()
+    private fun getEndpoint(exchange: HttpExchange): String {
+        val requestURI = exchange.requestURI.toString()
+        val endpoint = requestURI.trim('/').split("/").first()
+        return endpoint
     }
 
-    private fun serviceGet(exchange: HttpExchange) {
-        val requestURI = exchange.requestURI.toString()
-        val filesIds = requestURI
-            .trim('/')
-            .split("_")
-            .mapNotNull { it.toIntOrNull() }
-            .distinct()
-        if (filesIds.isEmpty()) generateErrorResponse()
-        val data = getData(filesIds)
-        val response = if (data == null) generateErrorResponse()
-        else generateResponse(data)
-
+    private fun serviceGetModels(exchange: HttpExchange) {
+        val response = """
+            <html>
+            <head><title>Models</title></head>
+            <body>
+                <h1>Server Info</h1>
+                <p>Server is running</p>
+            </body>
+            </html>
+        """
         exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
         exchange.responseBody.use { it.write(response.toByteArray()) }
     }
 
-    private fun serviceDelete(exchange: HttpExchange) {
-        TODO()
+    private fun serviceGetData(exchange: HttpExchange) {
+        val response = """
+            <html>
+            <head><title>Data</title></head>
+            <body>
+                <h1>Data</h1>
+                <p>Provide data</p>
+            </body>
+            </html>
+        """
+        exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
+        exchange.responseBody.use { it.write(response.toByteArray()) }
     }
 
-    private fun servicePut(exchange: HttpExchange) {
-        TODO()
+    private fun servicePostTrain(exchange: HttpExchange) {
+        val response = """
+            <html>
+            <head><title>Train</title></head>
+            <body>
+                <h1>Train</h1>
+                <p>Train model</p>
+            </body>
+            </html>
+        """
+        exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
+        exchange.responseBody.use { it.write(response.toByteArray()) }
     }
 
-    private fun servicePatch(exchange: HttpExchange) {
-        TODO()
+    private fun servicePostClassify(exchange: HttpExchange) {
+        val response = """
+            <html>
+            <head><title>Classify</title></head>
+            <body>
+                <h1>Classify</h1>
+                <p>Classify data</p>
+            </body>
+            </html>
+        """
+        exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
+        exchange.responseBody.use { it.write(response.toByteArray()) }
     }
 
-    private fun getData(ids: List<Int>): List<Pair<String, Int>>? {
-        TODO()
+    private fun serviceDeleteModel(exchange: HttpExchange) {
+        val modelId = exchange.requestURI.query.split("=").last()
+
+        //ModelSerialization.remove()
+
+        val response = """
+            <html>
+            <head><title>Delete Model</title></head>
+            <body>
+                <h1>Delete Model</h1>
+                <p>Delete model</p>
+            </body>
+            </html>
+        """
+        exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
+        exchange.responseBody.use { it.write(response.toByteArray()) }
     }
 
     private fun generateResponse(data: List<Pair<String, Int>>): String {
