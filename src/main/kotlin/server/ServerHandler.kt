@@ -1,7 +1,16 @@
 package com.ertools.server
 
+import com.ertools.common.Matrix
+import com.ertools.io.DataLoader
+import com.ertools.io.Mapper
+import com.ertools.io.ModelSerialization
+import com.ertools.network.*
+import com.ertools.operations.Evaluation
+import com.ertools.operations.Initializer
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
+import java.io.InputStreamReader
+import java.util.*
 
 class ServerHandler: HttpHandler {
     override fun handle(exchange: HttpExchange) {
@@ -73,17 +82,72 @@ class ServerHandler: HttpHandler {
     }
 
     private fun servicePostTrain(exchange: HttpExchange) {
-        val response = """
-            <html>
-            <head><title>Train</title></head>
-            <body>
-                <h1>Train</h1>
-                <p>Train model</p>
-            </body>
-            </html>
-        """
-        exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
-        exchange.responseBody.use { it.write(response.toByteArray()) }
+        val isr = InputStreamReader(exchange.requestBody)
+        val modelDTO = Mapper.getObjectMapper().readValue(isr, ModelDTO::class.java)
+
+        /** Build model **/
+        val layers = modelDTO.layers.map {
+            when(it) {
+                is LayerDTO.InputDTO -> Input(it.height, it.width)
+                is LayerDTO.ConvDTO -> Conv(
+                    it.filtersAmount,
+                    it.kernel,
+                    it.stride,
+                    it.padding,
+                    modelDTO.learningRate,
+                    { Initializer.random(it.weightRange) },
+                    it.activation
+                )
+                is LayerDTO.MaxPoolDTO -> MaxPool(it.poolSize, it.stride, it.padding)
+                is LayerDTO.FlattenDTO -> Flatten()
+                is LayerDTO.DenseDTO -> Dense(
+                    it.neurons,
+                    modelDTO.learningRate,
+                    { Initializer.random(it.weightRange) },
+                    it.activation
+                )
+                is LayerDTO.DropoutDTO -> Dropout(it.rate)
+            }
+        }
+
+        val model = CNN(layers)
+
+        /** Load training data **/
+        val trainData: DataLoader.ImageSetData
+        val trainLabels: DataLoader.LabelSetData
+
+        try {
+            trainData = DataLoader.loadImageData(modelDTO.trainDataPath, modelDTO.trainDataSize)
+            trainLabels = DataLoader.loadLabelData(modelDTO.trainDataPath, modelDTO.trainDataSize)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            reply("E: Failed to load data.", 400, exchange)
+            return
+        }
+        val (x, y) = DataLoader.shuffle(trainData, trainLabels, modelDTO.trainDataSize)
+
+        /** Train model **/
+        var predictedLabels = emptyList<Array<Double>>()
+        for(epoch in 0 until modelDTO.epochs) {
+            predictedLabels = model.fit(x, y)
+            val accuracy = Evaluation.accuracy(y, predictedLabels)
+            val response = "R: Epoch (${epoch + 1}/$modelDTO.epochs) accuracy ${"%.3f".format(Locale.ENGLISH, accuracy * 100)}%"
+            reply(response, 200, exchange)
+        }
+
+        /** Save model **/
+        ModelSerialization.save(model, modelDTO.modelName)
+
+        /** Evaluate model **/
+        val matrix = Evaluation.confusionMatrix(y, predictedLabels)
+        reply(matrix, 200, exchange)
+
+        val testData = DataLoader.loadImageData(modelDTO.testDataPath, modelDTO.testDataSize)
+        val testLabel = DataLoader.loadLabelData(modelDTO.testDataPath, modelDTO.testDataSize)
+        val (xTest, yTest) = DataLoader.shuffle(testData, testLabel, modelDTO.testDataSize)
+
+        val accuracy = model.test(xTest, yTest)
+        reply("R: Accuracy: $accuracy", 200, exchange)
     }
 
     private fun servicePostClassify(exchange: HttpExchange) {
@@ -100,22 +164,29 @@ class ServerHandler: HttpHandler {
         exchange.responseBody.use { it.write(response.toByteArray()) }
     }
 
-    private fun serviceDeleteModel(exchange: HttpExchange) {
-        val modelId = exchange.requestURI.query.split("=").last()
-
-        //ModelSerialization.remove()
-
-        val response = """
-            <html>
-            <head><title>Delete Model</title></head>
-            <body>
-                <h1>Delete Model</h1>
-                <p>Delete model</p>
-            </body>
-            </html>
-        """
-        exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
+    private fun reply(response: String, code: Int, exchange: HttpExchange) {
+        exchange.sendResponseHeaders(code, response.toByteArray().size.toLong())
         exchange.responseBody.use { it.write(response.toByteArray()) }
+    }
+
+    private fun serviceDeleteModel(exchange: HttpExchange) {
+        try {
+            val modelId = exchange.requestURI.query.trim('/').split("/")[1]
+            ModelSerialization.remove(modelId)
+            val response = """
+                <html>
+                <head><title>Delete Model</title></head>
+                <body>
+                    <h1>Delete Model</h1>
+                    <p>Delete model</p>
+                </body>
+                </html>
+            """
+            exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
+            exchange.responseBody.use { it.write(response.toByteArray()) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun generateResponse(data: List<Pair<String, Int>>): String {

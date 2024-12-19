@@ -16,7 +16,9 @@ fun main() {
         model.predict(it)
     }
 
-    Evaluation.confusionMatrix(y, predictedLabels)
+    val matrix = Evaluation.confusionMatrix(y, predictedLabels)
+    println("R: Confusion matrix:\n$matrix")
+
     val accuracy = Evaluation.accuracy(y, predictedLabels)
     println("R: Accuracy: $accuracy")
 }

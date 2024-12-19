@@ -4,6 +4,7 @@ import com.ertools.operations.Error.dmse
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
 import com.ertools.model.Layer
+import com.ertools.operations.Evaluation
 
 class CNN(
     private val layers: List<Layer>
@@ -38,6 +39,15 @@ class CNN(
             predictedLabels.add(response.asVector())
         }
         return predictedLabels
+    }
+
+    fun test(x: List<Matrix>, y: List<Array<Double>>): Double {
+        val predictedLabels = mutableListOf<Array<Double>>()
+        x.forEach { image ->
+            val response = predict(image)
+            predictedLabels.add(response)
+        }
+        return Evaluation.accuracy(y, predictedLabels)
     }
 
     fun predict(x: Matrix): Array<Double> {

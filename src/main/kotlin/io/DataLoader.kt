@@ -2,6 +2,7 @@ package com.ertools.io
 
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
+import com.ertools.common.Utils
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -90,5 +91,11 @@ object DataLoader {
         val newX = shuffledIndices.map { x.data[it] }
         val newY = shuffledIndices.map { y.labels[it] }
         return Pair(newX, newY)
+    }
+
+    fun loadLabels(labels: List<Int>): List<Char> {
+        val mappingFile = File(Utils.LABELS_BALANCED_DICTIONARY)
+        val mapping = mappingFile.readLines().map { it.split(" ")[1].toInt().toChar() }
+        return labels.map { mapping[it] }
     }
 }

@@ -66,6 +66,8 @@ fun main() {
         val accuracy = Evaluation.accuracy(y, predictedLabels)
         println("R: Epoch (${epoch + 1}/$epochs) accuracy ${"%.3f".format(Locale.ENGLISH, accuracy * 100)}%")
     }
-    Evaluation.confusionMatrix(y, predictedLabels)
+    val matrix = Evaluation.confusionMatrix(y, predictedLabels)
+    println("R: Confusion matrix:\n$matrix")
+
     ModelSerialization.save(cnn, "balanced_50e_1c_2d.model")
 }
