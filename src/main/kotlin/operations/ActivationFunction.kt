@@ -6,6 +6,19 @@ import kotlin.math.pow
 sealed class ActivationFunction {
     abstract fun invoke(x: Array<Double>, derivative: Boolean = false): Array<Double>
 
+    companion object {
+        fun fromString(type: String): ActivationFunction {
+            return when (type.lowercase()) {
+                "linear" -> Linear
+                "tanh" -> Tanh
+                "relu" -> Relu
+                "sigmoid" -> Sigmoid
+                "softmax" -> Softmax
+                else -> throw IllegalArgumentException("Invalid activation function")
+            }
+        }
+    }
+
     data object Linear : ActivationFunction() {
         override fun invoke(x: Array<Double>, derivative: Boolean): Array<Double> {
             return if (derivative) x.map { 1.0 }.toTypedArray()

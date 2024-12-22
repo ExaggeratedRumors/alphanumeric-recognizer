@@ -1,0 +1,68 @@
+### get models info
+GET http://localhost:8080/models
+
+### get data info
+GET http://localhost:8080/data
+
+### train model
+POST http://localhost:8080/train
+Content-Type: application/json
+
+{
+  "modelName": "model1",
+  "trainDataPath": "emnist-digits-train-images-idx3-ubyte",
+  "testDataPath": "emnist-digits-test-images-idx3-ubyte",
+    "trainDataSize": 100,
+    "testDataSize": 100,
+    "epochs": 10,
+    "learningRate": 0.01,
+    "batchSize": 10,
+    "layers": [
+      {
+        "type": "Input",
+        "height": 28,
+        "width": 28,
+        "channels": 1
+      },
+      {
+        "type": "Conv",
+        "filtersAmount": 32,
+        "kernel": 3,
+        "stride": 1,
+        "padding": 0,
+        "activation": "relu",
+        "weightRange": 0.01
+      },
+      {
+        "type": "MaxPooling",
+        "poolSize": 2,
+        "stride": 2
+      },
+      {
+        "type": "Flatten"
+      },
+      {
+        "type": "Dense",
+        "units": 100,
+        "activation": "relu"
+      },
+      {
+        "type": "Dropout",
+        "rate": 0.1
+      },
+      {
+        "type": "Dense",
+        "units": 47,
+        "activation": "softmax"
+      }
+    ]
+}
+
+### classify request
+POST http://localhost:8080/classify
+Content-Type: multipart/form-data
+
+{
+  "modelName": "balanced_100e_1c_2d.model",
+  "imageData":
+}

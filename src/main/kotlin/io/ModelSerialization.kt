@@ -23,8 +23,9 @@ object ModelSerialization {
         return objectMapper.readValue(json, CNN::class.java)
     }
 
-    fun remove(filename: String) {
-        java.io.File("${Utils.MODELS_PATH}/$filename").delete()
+    fun remove(filename: String): Boolean {
+        val success = java.io.File("${Utils.MODELS_PATH}/$filename").delete()
+        return success
     }
 
     fun getModelsList(): List<String> {

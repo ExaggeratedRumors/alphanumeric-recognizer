@@ -11,13 +11,13 @@ object Utils {
     const val TRAIN_IMAGE_BALANCED_DATA_FILENAME = "emnist-balanced-train-images-idx3-ubyte"
     const val TEST_LABEL_BALANCED_DATA_FILENAME = "emnist-balanced-test-labels-idx1-ubyte"
     const val TEST_IMAGE_BALANCED_DATA_FILENAME = "emnist-balanced-test-images-idx3-ubyte"
-
     const val LABELS_BALANCED_DICTIONARY = "data/emnist-balanced-mapping.txt"
+    const val TEMP_DATA_PATH = "data/temp"
 
     /** Models **/
     const val MODELS_PATH = "models"
 
     /** Server **/
-    const val SERVER_PORT = 8001
+    const val SERVER_PORT = 8080
     const val SERVER_STOP_DELAY = 2
 }

@@ -1,14 +1,20 @@
 package com.ertools.server
 
-import com.ertools.common.Matrix
+import com.ertools.common.Utils
 import com.ertools.io.DataLoader
 import com.ertools.io.Mapper
 import com.ertools.io.ModelSerialization
 import com.ertools.network.*
+import com.ertools.operations.ActivationFunction
 import com.ertools.operations.Evaluation
 import com.ertools.operations.Initializer
+import com.ertools.operations.Preprocessing
+import com.ertools.server.dto.ClassifyImageRequest
+import com.ertools.server.dto.LayerDTO
+import com.ertools.server.dto.TrainModelRequest
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
+import java.io.File
 import java.io.InputStreamReader
 import java.util.*
 
@@ -21,23 +27,23 @@ class ServerHandler: HttpHandler {
                     when(endpoint) {
                         "models" -> serviceGetModels(exchange)
                         "data" -> serviceGetData(exchange)
-                        else -> generateErrorResponse()
+                        else -> reply("E: Invalid endpoint", 400, exchange)
                     }
                 }
                 "POST" -> {
                     when(endpoint) {
                         "train" -> servicePostTrain(exchange)
                         "classify" -> servicePostClassify(exchange)
-                        else -> generateErrorResponse()
+                        else -> reply("E: Invalid endpoint", 400, exchange)
                     }
                 }
                 "DELETE" -> {
                     when(endpoint) {
                         "model" -> serviceDeleteModel(exchange)
-                        else -> generateErrorResponse()
+                        else -> reply("E: Invalid endpoint", 400, exchange)
                     }
                 }
-                else -> generateErrorResponse()
+                else -> reply("E: Invalid endpoint", 400, exchange)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -83,7 +89,7 @@ class ServerHandler: HttpHandler {
 
     private fun servicePostTrain(exchange: HttpExchange) {
         val isr = InputStreamReader(exchange.requestBody)
-        val modelDTO = Mapper.getObjectMapper().readValue(isr, ModelDTO::class.java)
+        val modelDTO = Mapper.getObjectMapper().readValue(isr, TrainModelRequest::class.java)
 
         /** Build model **/
         val layers = modelDTO.layers.map {
@@ -96,7 +102,7 @@ class ServerHandler: HttpHandler {
                     it.padding,
                     modelDTO.learningRate,
                     { Initializer.random(it.weightRange) },
-                    it.activation
+                    ActivationFunction.fromString(it.activation)
                 )
                 is LayerDTO.MaxPoolDTO -> MaxPool(it.poolSize, it.stride, it.padding)
                 is LayerDTO.FlattenDTO -> Flatten()
@@ -104,7 +110,7 @@ class ServerHandler: HttpHandler {
                     it.neurons,
                     modelDTO.learningRate,
                     { Initializer.random(it.weightRange) },
-                    it.activation
+                    ActivationFunction.fromString(it.activation)
                 )
                 is LayerDTO.DropoutDTO -> Dropout(it.rate)
             }
@@ -151,78 +157,57 @@ class ServerHandler: HttpHandler {
     }
 
     private fun servicePostClassify(exchange: HttpExchange) {
+        val isr = InputStreamReader(exchange.requestBody)
+
+        val imageDTO = Mapper.getObjectMapper().readValue(isr, ClassifyImageRequest::class.java)
+        val decodedData = Base64.getDecoder().decode(imageDTO.imageData)
+        val imageFile = File("${Utils.TEMP_DATA_PATH}/temp_image_${imageDTO.imageData.hashCode()}").apply {
+            createNewFile()
+            writeBytes(decodedData)
+        }
+
+        val imageToPrediction = Preprocessing.fileToMatrix(imageFile)
+        imageToPrediction.print()
+
+        val model: CNN
+        try {
+            model = ModelSerialization.load(imageDTO.modelName)
+        } catch(e: Exception) {
+            e.printStackTrace()
+            reply("E: Failed to load model.", 400, exchange)
+            return
+        }
+
+        val prediction = model.predict(imageToPrediction)
+        val label = Evaluation.valuesToLabels(prediction)
+
         val response = """
             <html>
             <head><title>Classify</title></head>
             <body>
-                <h1>Classify</h1>
-                <p>Classify data</p>
+            ${label.joinToString("") { "<p>${it.first}: ${it.second}</p>" }}
             </body>
             </html>
         """
-        exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
-        exchange.responseBody.use { it.write(response.toByteArray()) }
-    }
-
-    private fun reply(response: String, code: Int, exchange: HttpExchange) {
-        exchange.sendResponseHeaders(code, response.toByteArray().size.toLong())
-        exchange.responseBody.use { it.write(response.toByteArray()) }
+        reply(response, 200, exchange)
     }
 
     private fun serviceDeleteModel(exchange: HttpExchange) {
         try {
             val modelId = exchange.requestURI.query.trim('/').split("/")[1]
-            ModelSerialization.remove(modelId)
-            val response = """
-                <html>
-                <head><title>Delete Model</title></head>
-                <body>
-                    <h1>Delete Model</h1>
-                    <p>Delete model</p>
-                </body>
-                </html>
-            """
-            exchange.sendResponseHeaders(200, response.toByteArray().size.toLong())
-            exchange.responseBody.use { it.write(response.toByteArray()) }
+            val success = ModelSerialization.remove(modelId)
+            when(success) {
+                true -> reply("R: Model deleted", 200, exchange)
+                false -> reply("E: Failed to delete model", 404, exchange)
+            }
         } catch (e: Exception) {
+            reply("E: Error occurred during removing model", 500, exchange)
             e.printStackTrace()
         }
     }
 
-    private fun generateResponse(data: List<Pair<String, Int>>): String {
-        val combinedData = data.groupBy({ it.first }, { it.second })
-            .mapValues { it.value.sum() }
-
-        val tableRows = combinedData.entries.joinToString("") {
-            "<tr><td>${it.key}</td><td>${it.value}</td></tr>"
-        }
-
-        val sum = data.sumOf { it.second }
-
-        return """
-            <html>
-            <head><title>Data</title></head>
-            <body>
-                <h1>Header</h1>
-                <table border="1">
-                    <tr><th>Product</th><th>Quantity</th></tr>
-                    $tableRows
-                </table>
-                Cost: $sum
-            </body>
-            </html>
-        """
-    }
-
-    private fun generateErrorResponse(): String {
-        return """
-            <html>
-            <head><title>Error</title></head>
-            <body>
-                <h1>Error: Invalid input data</h1>
-                <p>Please provide valid data</p>
-            </body>
-            </html>
-        """
+    private fun reply(response: String, code: Int, exchange: HttpExchange) {
+        exchange.sendResponseHeaders(code, response.toByteArray().size.toLong())
+        exchange.responseBody.use { it.write(response.toByteArray()) }
     }
 }

@@ -2,8 +2,7 @@ package com.ertools.operations
 
 import com.ertools.io.DataLoader
 
-object Evaluation
-{
+object Evaluation {
     fun confusionMatrix(trueLabels: List<Array<Double>>, predictedLabels: List<Array<Double>>): String {
         val log = sequence {
             val classes = DataLoader.loadLabels ((0 until trueLabels[0].size).toList())
@@ -29,5 +28,10 @@ object Evaluation
             predicted.indexOf(predicted.maxOf { it }) == real.indexOf(real.maxOf { it })
         }
         return correct.toDouble() / trueLabels.size
+    }
+
+    fun valuesToLabels(values: Array<Double>): Array<Pair<Char, Double>> {
+        val labels = DataLoader.loadLabels(values.indices.toList())
+        return labels.zip(values).toTypedArray()
     }
 }

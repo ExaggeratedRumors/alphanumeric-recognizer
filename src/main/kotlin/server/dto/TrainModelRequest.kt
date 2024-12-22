@@ -1,8 +1,9 @@
-package com.ertools.server
+package com.ertools.server.dto
 
 import com.ertools.operations.ActivationFunction
 
-data class ModelDTO(
+
+data class TrainModelRequest(
     val modelName: String,
     val trainDataPath: String,
     val testDataPath: String,
@@ -28,7 +29,7 @@ sealed class LayerDTO(
         val kernel: Int,
         val stride: Int,
         val padding: Int,
-        val activation: ActivationFunction,
+        val activation: String,
         val weightRange: Double
     ): LayerDTO("conv")
 
@@ -42,7 +43,7 @@ sealed class LayerDTO(
 
     class DenseDTO(
         val neurons: Int,
-        val activation: ActivationFunction,
+        val activation: String,
         val weightRange: Double
     ): LayerDTO("dense")
 
