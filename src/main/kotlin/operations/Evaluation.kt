@@ -19,7 +19,7 @@ object Evaluation {
                 classes[it]
             }.joinToString("\t")
             yield("\t\t$labels")
-        }.toString()
+        }.toList().toString()
         return log
     }
 
@@ -30,8 +30,11 @@ object Evaluation {
         return correct.toDouble() / trueLabels.size
     }
 
-    fun valuesToLabels(values: Array<Double>): Array<Pair<Char, Double>> {
-        val labels = DataLoader.loadLabels(values.indices.toList())
-        return labels.zip(values).toTypedArray()
+    fun valuesToLabel(values: Array<Double>): Pair<String, String> {
+        val labels = DataLoader.loadLabels(values.indices.toList()).map {
+            it.toString()
+        }
+        val maxLabel = labels.zip(values).maxBy { it.second }
+        return Pair(maxLabel.first, "%.4f".format(maxLabel.second))
     }
 }

@@ -97,7 +97,14 @@ class TestCNN {
         val trainY = arrayOf(0.0, 1.0)
         cnn.fit(listOf(trainX), listOf(trainY))
 
-        ModelSerialization.save(cnn, "cnn.json")
+        val trainingInfo = ModelSerialization.TrainingInfo(
+            modelName = "testcnn",
+            epochs = 0,
+            trainingDataAmount = 0,
+            batch = 0
+        )
+
+        ModelSerialization.save(cnn, trainingInfo)
         val loadedCnn = ModelSerialization.load("cnn.json")
         loadedCnn.build()
         loadedCnn.fit(listOf(trainX), listOf(trainY))

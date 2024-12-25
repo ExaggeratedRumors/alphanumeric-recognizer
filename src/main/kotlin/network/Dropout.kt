@@ -36,6 +36,13 @@ class Dropout(
         return flatten.toMatrix().reconstructMatrix(input.rows)
     }
 
+    override fun info(): String {
+        val info = sequence {
+            yield("Dropout (${dimensions.batch},${dimensions.height},${dimensions.width},${dimensions.channels})")
+            yield("\tfactor: $factor")
+        }
+        return info.toList().joinToString("\n")
+    }
     /**
      * Rows: 1
      * Columns: Image data

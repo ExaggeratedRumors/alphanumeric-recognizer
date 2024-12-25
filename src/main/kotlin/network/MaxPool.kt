@@ -28,6 +28,16 @@ class MaxPool(
         )
     }
 
+    override fun info(): String {
+        val info = sequence {
+            yield("MaxPool (${dimensions.batch},${dimensions.height},${dimensions.width},${dimensions.channels})")
+            yield("\tpoolSize: $poolSize")
+            yield("\tstride: $stride")
+            yield("\tpadding: $padding")
+        }
+        return info.toList().joinToString("\n")
+    }
+
     /**
      * Rows: Pooled image data
      * Columns: Filters

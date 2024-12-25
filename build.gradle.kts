@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
+    implementation("commons-fileupload:commons-fileupload:1.5")
     testImplementation(kotlin("test"))
 }
 

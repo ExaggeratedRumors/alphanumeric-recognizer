@@ -15,6 +15,13 @@ class Input(
         )
     }
 
+    override fun info(): String {
+        val info = sequence {
+            yield("Input (${dimensions.batch},${dimensions.height},${dimensions.width},${dimensions.channels})")
+        }
+        return info.toList().joinToString("\n")
+    }
+
     /**
      * Rows: Image data
      * Columns: Channels

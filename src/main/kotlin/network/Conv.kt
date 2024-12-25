@@ -41,6 +41,19 @@ class Conv(
         }
     }
 
+    override fun info(): String {
+        val info = sequence {
+            yield("Conv (${dimensions.batch},${dimensions.height},${dimensions.width},${dimensions.channels})")
+            yield("\tfiltersAmount: $filtersAmount")
+            yield("\tkernel: $kernel")
+            yield("\tstride: $stride")
+            yield("\tpadding: $padding")
+            yield("\tlearningRate: $learningRate")
+            yield("\tactivationFunction: $activationFunction")
+        }
+        return info.toList().joinToString("\n")
+    }
+
     /**
      * Rows: Image data
      * Columns: Channels

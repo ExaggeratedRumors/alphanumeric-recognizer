@@ -28,6 +28,16 @@ class Dense(
         weights = Array(neurons) { Array(previousLayer!!.dimensions.width) { weightsInitializer.invoke() } }.toMatrix()
     }
 
+    override fun info(): String {
+        val info = sequence {
+            yield("Dense (${dimensions.batch},${dimensions.height},${dimensions.width},${dimensions.channels})")
+            yield("\tneurons: $neurons")
+            yield("\tlearningRate: $learningRate")
+            yield("\tactivationFunction: $activationFunction")
+        }
+        return info.toList().joinToString("\n")
+    }
+
     /**
      * Rows: 1
      * Columns: Neurons

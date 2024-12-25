@@ -7,14 +7,16 @@ import java.net.InetSocketAddress
 class ServerRoutine(private val port: Int) {
     private lateinit var server: HttpServer
     private var isRunning: Boolean = false
+    private val statusQueue = arrayListOf<ModelStatus>()
+
     fun start() {
         try {
             val server = HttpServer.create(InetSocketAddress(port), 0)
-            server.createContext("/", ServerHandler())
+            server.createContext("/", ServerHandler(statusQueue))
             server.executor = null
             server.start()
             isRunning = true
-            println("Listening port $port ...")
+            println("I: Listening port $port ...")
         } catch (e: Exception) {
             e.printStackTrace()
         }

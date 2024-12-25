@@ -39,6 +39,7 @@ abstract class Layer : Serializable {
         initialize()
     }
     abstract fun initialize()
+    abstract fun info(): String
     abstract fun response(input: Matrix): Matrix
     abstract fun error(input: Matrix): Matrix
 }

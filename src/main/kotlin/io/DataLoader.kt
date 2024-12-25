@@ -3,12 +3,9 @@ package com.ertools.io
 import com.ertools.common.Matrix
 import com.ertools.common.Matrix.Companion.toMatrix
 import com.ertools.common.Utils
-import java.awt.Image
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.util.*
-import javax.imageio.ImageIO
 
 object DataLoader {
     data class ImageSetData(
@@ -100,5 +97,15 @@ object DataLoader {
         val mappingFile = File(Utils.LABELS_BALANCED_DICTIONARY)
         val mapping = mappingFile.readLines().map { it.split(" ")[1].toInt().toChar() }
         return labels.map { mapping[it] }
+    }
+
+    fun getFullDataInfo(dir: String): String {
+        val info = sequence {
+            yield("Files in $dir:")
+            File(dir).list()?.forEach {
+                yield(it)
+            }
+        }.toList().joinToString("\n")
+        return info
     }
 }

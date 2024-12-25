@@ -21,6 +21,13 @@ fun main() {
     val yTest = DataLoader.loadLabelData("${Utils.DATA_PATH}/${Utils.TEST_LABEL_BALANCED_DATA_FILENAME}", 10000)
     println("R: Load ${yTest.labels.size} test labels.")
 
+    val trainingInfo = ModelSerialization.TrainingInfo(
+        modelName = "balanced_100e_1c_2d",
+        epochs = 100,
+        trainingDataAmount = 8000,
+        batch = 1
+    )
+
     val cnn = CNN(
         listOf(
             Input(28, 28),
@@ -52,22 +59,18 @@ fun main() {
     )
     println("I: Building CNN.")
     val log = cnn.build()
-    log.forEach { println(it) }
+    println(log)
 
-
-    val epochs = 50
-    val dataAmount = 8000
-    println("I: Start training $dataAmount data samples for $epochs epochs.")
-
-    val (x, y) = DataLoader.shuffle(xTrain, yTrain, dataAmount)
+    println("I: Start training ${trainingInfo.trainingDataAmount} data samples for ${trainingInfo.epochs} epochs.")
+    val (x, y) = DataLoader.shuffle(xTrain, yTrain, trainingInfo.trainingDataAmount)
     var predictedLabels = emptyList<Array<Double>>()
-    for(epoch in 0 until epochs) {
+    for(epoch in 0 until trainingInfo.epochs) {
         predictedLabels = cnn.fit(x, y)
         val accuracy = Evaluation.accuracy(y, predictedLabels)
-        println("R: Epoch (${epoch + 1}/$epochs) accuracy ${"%.3f".format(Locale.ENGLISH, accuracy * 100)}%")
+        println("R: Epoch (${epoch + 1}/${trainingInfo.epochs}) accuracy ${"%.3f".format(Locale.ENGLISH, accuracy * 100)}%")
     }
     val matrix = Evaluation.confusionMatrix(y, predictedLabels)
     println("R: Confusion matrix:\n$matrix")
 
-    ModelSerialization.save(cnn, "balanced_50e_1c_2d.model")
+    ModelSerialization.save(cnn, trainingInfo)
 }

@@ -16,6 +16,8 @@ object Utils {
 
     /** Models **/
     const val MODELS_PATH = "models"
+    const val MODEL_EXTENSION = "model"
+    const val MODEL_METADATA_EXTENSION = "metadata"
 
     /** Server **/
     const val SERVER_PORT = 8080

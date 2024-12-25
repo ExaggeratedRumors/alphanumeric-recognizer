@@ -9,16 +9,18 @@ import com.ertools.operations.Evaluation
 class CNN(
     private val layers: List<Layer>
 ) {
-    fun build(): List<String> {
+    lateinit var info: String
+        private set
+
+    fun build(): String {
         val log = sequence {
             layers.forEachIndexed { index, layer ->
                 layer.bind(layers.getOrNull(index - 1), layers.getOrNull(index + 1))
-                yield("R: Layer ${layer.javaClass.simpleName} " +
-                        "(${layer.dimensions.height},${layer.dimensions.width},${layer.dimensions.channels}," +
-                        "${layer.dimensions.batch}) initialized.")
+                yield(layer.info())
             }
         }.toList()
-        return log
+        info = log.joinToString("\n")
+        return info
     }
 
     fun fit(x: List<Matrix>, y: List<Array<Double>>): List<Array<Double>> {

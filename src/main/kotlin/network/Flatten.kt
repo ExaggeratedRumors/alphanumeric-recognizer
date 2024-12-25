@@ -15,6 +15,13 @@ class Flatten : Layer() {
         )
     }
 
+    override fun info(): String {
+        val info = sequence {
+            yield("Flatten (${dimensions.batch},${dimensions.height},${dimensions.width},${dimensions.channels})")
+        }
+        return info.toList().joinToString("\n")
+    }
+
     /**
      * Input: rows (image data), columns (filters)
      * Output: rows (1), columns (image data)

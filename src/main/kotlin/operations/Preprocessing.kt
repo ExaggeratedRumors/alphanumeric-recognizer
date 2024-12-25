@@ -19,7 +19,6 @@ object Preprocessing {
                 (resizedImage.getRGB(row, column) and 0xFF) / 255.0
             }.toTypedArray()
         }.toTypedArray().toMatrix()
-
         return matrix
     }
 }
