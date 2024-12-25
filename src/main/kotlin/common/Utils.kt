@@ -22,4 +22,5 @@ object Utils {
     /** Server **/
     const val SERVER_PORT = 8080
     const val SERVER_STOP_DELAY = 2
+    const val MAX_MODELS_TRAINING = 3
 }

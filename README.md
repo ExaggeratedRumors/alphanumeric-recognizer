@@ -21,8 +21,5 @@ in progress
 
 Source: <a href="https://www.kaggle.com/datasets/crawford/emnist/data">EMNIST</a>
 
+# Execution
 
-## TODO
-- full convolution
-- batches
-- endpoints for cnn

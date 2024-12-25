@@ -106,6 +106,16 @@ class ServerHandler(private val statusQueue: ArrayList<ModelStatus>): HttpHandle
             reply("E: Model with name ${modelDTO.modelName} is already training.", 400, exchange)
             return
         }
+
+        statusQueue.count {
+            it.status in listOf(ModelStatus.Status.PREPARING, ModelStatus.Status.BUILT, ModelStatus.Status.TRAINING)
+        }.let {
+            if(it >= Utils.MAX_MODELS_TRAINING) {
+                reply("E: Maximum concurrent models reached.", 400, exchange)
+                return
+            }
+        }
+
         val status = ModelStatus(modelDTO.modelName, ModelStatus.Status.PREPARING, "I: Building model.")
         statusQueue.add(status)
 
