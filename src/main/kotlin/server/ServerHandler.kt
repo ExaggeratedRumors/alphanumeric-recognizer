@@ -293,8 +293,8 @@ class ServerHandler(private val statusQueue: ArrayList<ModelStatus>): HttpHandle
     }
 
     private fun serviceDeleteModel(exchange: HttpExchange) {
-        val modelId = exchange.requestURI.query.trim('/').split("/")[1]
-        val success = ModelSerialization.remove(modelId)
+        val modelName = exchange.requestURI.query.trim('/').split("/")[1]
+        val success = ModelSerialization.remove(modelName)
         when(success) {
             true -> reply("R: Model deleted", 200, exchange)
             false -> reply("E: Failed to delete model", 400, exchange)

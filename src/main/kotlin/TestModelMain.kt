@@ -5,12 +5,15 @@ import com.ertools.common.Utils
 import com.ertools.io.DataLoader
 import com.ertools.io.ModelSerialization
 
-fun main() {
-    val model = ModelSerialization.load("balanced_50e_1c_1d")
+fun main(args: Array<String>) {
+    val modelName = if(args.isEmpty()) "balanced_50e_1c_1d" else args[0]
+    val testSizeException = if(args.size > 1) args[1].toInt() else 10000
+
+    val model = ModelSerialization.load(modelName)
     model.build()
     val xTest = DataLoader.loadImageData("${Utils.DATA_PATH}/${Utils.TEST_IMAGE_BALANCED_DATA_FILENAME}", 10000)
     val yTest = DataLoader.loadLabelData("${Utils.DATA_PATH}/${Utils.TEST_LABEL_BALANCED_DATA_FILENAME}", 10000)
-    val (x, y) = DataLoader.shuffle(xTest, yTest, 10000)
+    val (x, y) = DataLoader.shuffle(xTest, yTest, testSizeException)
 
     val predictedLabels = x.map {
         model.predict(it)

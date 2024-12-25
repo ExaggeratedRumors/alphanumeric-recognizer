@@ -9,7 +9,11 @@ import com.ertools.network.*
 import com.ertools.operations.ActivationFunction
 import java.util.*
 
-fun main() {
+fun main(args: Array<String>) {
+    val modelName = if(args.isEmpty()) "balanced_100e_1c_1d" else args[0]
+    val epochs = if(args.size > 1) args[1].toInt() else 100
+    val trainingDataAmount = if(args.size > 2) args[2].toInt() else 8000
+
     println("I: Start program.")
     println("I: Loading data from ${Utils.DATA_PATH}.")
     val xTrain = DataLoader.loadImageData("${Utils.DATA_PATH}/${Utils.TRAIN_IMAGE_BALANCED_DATA_FILENAME}", 10000)
@@ -20,13 +24,6 @@ fun main() {
     println("R: Load ${xTest.data.size} test images.")
     val yTest = DataLoader.loadLabelData("${Utils.DATA_PATH}/${Utils.TEST_LABEL_BALANCED_DATA_FILENAME}", 10000)
     println("R: Load ${yTest.labels.size} test labels.")
-
-    val trainingInfo = ModelSerialization.TrainingInfo(
-        modelName = "balanced_100e_1c_2d",
-        epochs = 100,
-        trainingDataAmount = 8000,
-        batch = 1
-    )
 
     val cnn = CNN(
         listOf(
@@ -61,6 +58,12 @@ fun main() {
     val log = cnn.build()
     println(log)
 
+    val trainingInfo = ModelSerialization.TrainingInfo(
+        modelName = modelName,
+        epochs = epochs,
+        trainingDataAmount = trainingDataAmount,
+        batch = 1
+    )
     println("I: Start training ${trainingInfo.trainingDataAmount} data samples for ${trainingInfo.epochs} epochs.")
     val (x, y) = DataLoader.shuffle(xTrain, yTrain, trainingInfo.trainingDataAmount)
     var predictedLabels = emptyList<Array<Double>>()

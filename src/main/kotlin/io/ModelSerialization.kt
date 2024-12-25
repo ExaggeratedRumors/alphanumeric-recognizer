@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.introspect.VisibilityChecker
 import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
 
 object ModelSerialization {
     private val serializationMapper: ObjectMapper = jacksonObjectMapper()
@@ -43,27 +44,29 @@ object ModelSerialization {
         }.joinToString("\n")
 
         val json = serializationMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cnn)
-        java.io.File("${Utils.MODELS_PATH}/${trainingInfo.modelName}.${Utils.MODEL_EXTENSION}").writeText(json)
-        java.io.File("${Utils.MODELS_PATH}/${trainingInfo.modelName}.${Utils.MODEL_METADATA_EXTENSION}").writeText(info)
+        File("${Utils.MODELS_PATH}/${trainingInfo.modelName}.${Utils.MODEL_EXTENSION}").writeText(json)
+        File("${Utils.MODELS_PATH}/${trainingInfo.modelName}.${Utils.MODEL_METADATA_EXTENSION}").writeText(info)
     }
 
     fun load(filename: String): CNN {
-        val json = java.io.File("${Utils.MODELS_PATH}/$filename.${Utils.MODEL_EXTENSION}").readText()
+        val json = File("${Utils.MODELS_PATH}/$filename.${Utils.MODEL_EXTENSION}").readText()
         return serializationMapper.readValue(json, CNN::class.java)
     }
 
     fun remove(filename: String): Boolean {
-        val success = java.io.File("${Utils.MODELS_PATH}/$filename.${Utils.MODEL_EXTENSION}").delete()
+        File("${Utils.MODELS_PATH}/$filename.${Utils.MODEL_METADATA_EXTENSION}").delete()
+
+        val success = File("${Utils.MODELS_PATH}/$filename.${Utils.MODEL_EXTENSION}").delete()
         return success
     }
 
     fun getModelsInfo(): String {
-        val models = java.io.File(Utils.MODELS_PATH).list()?.toList() ?: emptyList()
+        val models = File(Utils.MODELS_PATH).list()?.toList() ?: emptyList()
         val modelsAmount = models.count { it.endsWith(Utils.MODEL_EXTENSION) }
         val infoModelsAmount = models.count { it.endsWith(Utils.MODEL_METADATA_EXTENSION) }
         val info = models.filter { it.endsWith(Utils.MODEL_METADATA_EXTENSION) }.map {
             val name = it.removeSuffix(".${Utils.MODEL_METADATA_EXTENSION}")
-            val data = java.io.File("${Utils.MODELS_PATH}/$name.${Utils.MODEL_METADATA_EXTENSION}").readText()
+            val data = File("${Utils.MODELS_PATH}/$name.${Utils.MODEL_METADATA_EXTENSION}").readText()
             ModelMetadata(name, data)
         }
 
