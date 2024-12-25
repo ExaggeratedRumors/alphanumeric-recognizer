@@ -72,4 +72,4 @@ Model-Name: balanced_100e_1c_2d
 < ./test7.png
 
 ### delete model
-DELETE http://localhost:8080/models/endpointTestModel
+DELETE http://localhost:8080/model/endpointTestModel
