@@ -1,9 +1,12 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     kotlin("jvm") version "2.0.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.ertools"
-version = "1.0-SNAPSHOT"
+version = "1.0b"
 
 repositories {
     mavenCentral()
@@ -23,6 +26,30 @@ kotlin {
     jvmToolchain(20)
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(20))
+    }
+}
+
+tasks {
+    named<ShadowJar>("shadowJar") {
+        archiveBaseName.set("alphanumeric-recognizer")
+        archiveVersion.set(version.toString())
+        archiveClassifier.set("")
+        mergeServiceFiles()
+        manifest {
+            attributes(
+                "Main-Class" to "com.ertools.RunServerMainKt"
+            )
+        }
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+}
+
 fun createTask(taskName: String, mainClassName: String) {
     tasks.register<JavaExec>(taskName) {
         group = "model tasks"
@@ -30,10 +57,15 @@ fun createTask(taskName: String, mainClassName: String) {
         mainClass.set(mainClassName)
         classpath = sourceSets["main"].runtimeClasspath
         workingDir = file("$rootDir")
+
+        val argsProperty = project.findProperty("args")?.toString()
+        if (argsProperty != null) {
+            args = argsProperty.split("\\s+".toRegex())
+        }
     }
 }
 
 createTask("runServer", "com.ertools.RunServerMainKt")
 createTask("trainModel", "com.ertools.TrainModelMainKt")
 createTask("testModel", "com.ertools.TestModelMainKt")
-/* createTask("predict", "com.ertools.model.PredictMainKt") */
+

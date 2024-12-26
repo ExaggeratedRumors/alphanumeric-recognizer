@@ -20,46 +20,48 @@ Kotlin no-frameworks approach system classifying alphanumeric characters in imag
 ## Images data
 
 Source: <a href="https://www.kaggle.com/datasets/crawford/emnist/data">EMNIST</a>
+
 Data is saved in `/data` directory.
 
-# Executing
+## Executing
 
-1. Clone the repository:
+1. Make sure your JAVA_HOME is set to JDK 20.
+2. Clone the repository:
 ```agsl
 https://github.com/ExaggeratedRumors/demooder.git
 ```
-2. Download EMNIST data and unzip in `/data` directory (only if training/ test):
-3. Model training task:
+3. Download EMNIST data and unzip in `/data` directory (only if training/ test):
+4. Model training task:
 ```agsl
 ./gradlew trainModel --args='NEW_MODEL_NAME EPOCHS AMOUNT'
 
 example:
 ./gradlew trainModel --args='balanced_50e_1c_1d 50 10000'
 ```
-4. Model test task:
+5. Model test task:
 ```agsl
 ./gradlew testModel --args='MODEL_NAME AMOUNT'
 
 example:
 ./gradlew testModel --args='balanced_50e_1c_1d 10000'
 ```
-5. Server run task:
+6. Server run task:
 ```agsl
 ./gradlew runServer --args='PORT'
 
 example:
 ./gradlew runServer --args='8080'
 ```
-6. Output model data is saved in `/models` directory. Every model contains `.metadata` file with hyperparameters and `.model` file with weights.
+7. Output model data is saved in `/models` directory. Every model contains `.metadata` file with hyperparameters and `.model` file with weights.
 
 
-# Endpoints
+## Endpoints
 
 - GET `/models` - list all models with parameters.
 - GET `/data` - list all available training and test data.
-- GET `/status` - list status of training models.
+- GET `/status/{modelName}` - list status of training model.
 - POST `/train` - train new model by parameters and available layers (Input, Conv, MaxPool, Flatten, Dense, Dropout):
-```json
+```http
 Headers:
 Content-Type: application/json
 

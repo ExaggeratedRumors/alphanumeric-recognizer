@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  alphanumeric-recognizer:
+    build: .
+    container_name: alphanumeric-recognizer
+    ports:
+      - "8080:8080"
+    networks:
+      - global
+    volumes:
+      - ./models:/models
+      - ./data:/data
+    environment:
+      - SYSTEM_MODELS_LIMIT=${SYSTEM_MODELS_LIMIT}
+
+volumes:
+  data:
+  models:
+
+networks:
+  global:
+    external: false
