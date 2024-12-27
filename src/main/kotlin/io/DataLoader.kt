@@ -85,7 +85,7 @@ object DataLoader {
     fun shuffle(x: ImageSetData, y: LabelSetData, amount: Int): Pair<List<Matrix>, List<Array<Double>>> {
         require(x.amount == y.amount && x.amount >= amount) {
             "E: Amount of images and labels must be the same." +
-                    "\nGot: ${x.amount} and ${y.amount}."
+                    "\nGot: $amount, ${x.amount} and ${y.amount}."
         }
         val shuffledIndices = (0 until amount).shuffled()
         val newX = shuffledIndices.map { x.data[it] }

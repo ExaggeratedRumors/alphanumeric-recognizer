@@ -1,4 +1,4 @@
-# Demooder
+# # alphanumeric-recognizer
 
 ![Android support](https://shields.io/badge/Kotlin-2.0-green) ![Model](https://shields.io/badge/JVM-20-purple) ![1.0-b](https://shields.io/badge/1.0b-blue)
 
@@ -28,7 +28,7 @@ Data is saved in `/data` directory.
 1. Make sure your JAVA_HOME is set to JDK 20.
 2. Clone the repository:
 ```agsl
-https://github.com/ExaggeratedRumors/demooder.git
+https://github.com/ExaggeratedRumors/alphanumeric-recognizer.git
 ```
 3. Download EMNIST data and unzip in `/data` directory (only if training/ test):
 4. Model training task:
