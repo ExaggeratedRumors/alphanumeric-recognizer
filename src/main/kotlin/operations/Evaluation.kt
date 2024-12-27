@@ -19,7 +19,7 @@ object Evaluation {
                 classes[it]
             }.joinToString("\t")
             yield("\t\t$labels")
-        }.toList().toString()
+        }.toList().joinToString("\n")
         return log
     }
 
