@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.ertools"
-version = "1.0b"
+version = "1.0"
 
 repositories {
     mavenCentral()
