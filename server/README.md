@@ -1,4 +1,4 @@
-# # alphanumeric-recognizer
+# alphanumeric-recognizer-server
 
 ![Android support](https://shields.io/badge/Kotlin-2.0-green) ![Model](https://shields.io/badge/JVM-20-purple) ![1.0-b](https://shields.io/badge/1.0b-blue)
 

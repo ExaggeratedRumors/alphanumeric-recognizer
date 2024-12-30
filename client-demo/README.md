@@ -1,4 +1,4 @@
-# Alphanumeric Recognizer Client Demo
+# alphanumeric-recognizer-demo-client
 ![](https://shields.io/badge/ReactJS-yellow) ![](https://shields.io/badge/v1.0-purple)
 
 Demonstration client for alphanumeric-recognizer.
