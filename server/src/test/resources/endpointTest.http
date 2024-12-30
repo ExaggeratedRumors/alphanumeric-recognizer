@@ -69,14 +69,14 @@ POST http://localhost:8080/classify
 Content-Type: image/png
 Model-Name: balanced_50e_1c_2d
 
-< ./test1.png
+< ./testM.png
 
 ### classify request by digits model
 POST http://localhost:8080/classify
 Content-Type: image/png
 Model-Name: digits_25e_1c_1d
 
-< ./testM.png
+< ./test7.png
 
 ### delete model
 DELETE http://localhost:8080/model/endpointTestModel

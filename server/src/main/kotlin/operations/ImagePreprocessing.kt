@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-object Preprocessing {
+object ImagePreprocessing {
     fun fileToMatrix(file: File): Matrix {
         val image: BufferedImage = ImageIO.read(file)
         val resizedImage = BufferedImage(28, 28, BufferedImage.TYPE_BYTE_GRAY)
@@ -16,7 +16,7 @@ object Preprocessing {
 
         val matrix = (0 until 28).map { row ->
             (0 until 28).map { column ->
-                (resizedImage.getRGB(row, column) and 0xFF) / 255.0
+                (255 - resizedImage.getRGB(row, column) and 0xFF) / 255.0
             }.toTypedArray()
         }.toTypedArray().toMatrix()
         return matrix

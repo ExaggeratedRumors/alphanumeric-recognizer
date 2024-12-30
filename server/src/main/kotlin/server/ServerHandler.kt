@@ -8,7 +8,7 @@ import com.ertools.network.*
 import com.ertools.operations.ActivationFunction
 import com.ertools.operations.Evaluation
 import com.ertools.operations.Initializer
-import com.ertools.operations.Preprocessing
+import com.ertools.operations.ImagePreprocessing
 import com.ertools.server.dto.LayerDTO
 import com.ertools.server.dto.TrainModelDTO
 import com.sun.net.httpserver.HttpExchange
@@ -292,7 +292,8 @@ class ServerHandler(private val statusQueue: ArrayList<ModelStatus>): HttpHandle
             File(Utils.TEMP_DATA_PATH).mkdirs()
             imageFile = File(Utils.TEMP_DATA_PATH + "/temp_image.png")
             imageFile.writeBytes(imageData)
-            imageToPrediction = Preprocessing.fileToMatrix(imageFile)
+            imageToPrediction = ImagePreprocessing.fileToMatrix(imageFile)
+            imageToPrediction.print()
             imageFile.delete()
         } catch (e: Exception) {
             e.printStackTrace()
