@@ -98,7 +98,7 @@ class ServerHandler(private val statusQueue: ArrayList<ModelStatus>): HttpHandle
         val modelName = exchange.requestURI.toString().trim('/').split("/").last()
         val status = statusQueue.firstOrNull { it.modelName == modelName }
         if(status == null) {
-            reply("E: Model with name $modelName not found.", 400, exchange)
+            reply("E: Model with name $modelName has not been proceed recently.", 400, exchange)
             return
         }
         reply(status.info, 200, exchange)
