@@ -24,6 +24,6 @@ class ServerRoutine(private val port: Int) {
 
     fun shutdown() {
         if(!isRunning) return
-        server.stop(Utils.SERVER_STOP_DELAY)
+        server.stop(Utils.SERVER_STOP_DELAY_SECONDS)
     }
 }

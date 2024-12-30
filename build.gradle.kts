@@ -13,8 +13,13 @@ repositories {
 }
 
 dependencies {
+    /** Serialization **/
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
+
+    /** Transmission **/
     implementation("commons-fileupload:commons-fileupload:1.5")
+
+    /** Tests **/
     testImplementation(kotlin("test"))
 }
 

@@ -21,6 +21,6 @@ object Utils {
 
     /** Server **/
     const val SERVER_PORT = 8080
-    const val SERVER_STOP_DELAY = 2
+    const val SERVER_STOP_DELAY_SECONDS = 2
     val MAX_MODELS_TRAINING = System.getenv().getOrDefault("MAX_MODELS_TRAINING", "3").toInt()
 }
