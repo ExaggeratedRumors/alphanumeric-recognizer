@@ -1,0 +1,82 @@
+### get models info
+GET http://localhost:8080/models
+
+### get data info
+GET http://localhost:8080/data
+
+### train model
+POST http://localhost:8080/train
+Content-Type: application/json
+
+{
+    "modelName": "endpointTestModel",
+    "trainDataPath": "emnist-balanced-train-images-idx3-ubyte",
+    "trainLabelsPath": "emnist-balanced-train-labels-idx1-ubyte",
+    "trainDataSize": 150,
+    "testDataPath": "emnist-balanced-test-images-idx3-ubyte",
+    "testLabelsPath": "emnist-balanced-test-labels-idx1-ubyte",
+    "testDataSize": 10,
+    "epochs": 1,
+    "learningRate": 0.01,
+    "batchSize": 10,
+    "layers": [
+      {
+        "type": "Input",
+        "height": 28,
+        "width": 28,
+        "channels": 1
+      },
+      {
+        "type": "Conv",
+        "filtersAmount": 8,
+        "kernel": 3,
+        "stride": 1,
+        "padding": 0,
+        "activation": "relu",
+        "weightRange": 0.01
+      },
+      {
+        "type": "MaxPool",
+        "poolSize": 2,
+        "stride": 2
+      },
+      {
+        "type": "Flatten"
+      },
+      {
+        "type": "Dense",
+        "neurons": 10,
+        "activation": "relu",
+        "weightRange": 0.01
+      },
+      {
+        "type": "Dropout",
+        "rate": 0.1
+      },
+      {
+        "type": "Dense",
+        "neurons": 47,
+        "activation": "softmax"
+      }
+    ]
+}
+
+### get status info
+GET http://localhost:8080/status/endpointTestModel
+
+### classify request by balanced model
+POST http://localhost:8080/classify
+Content-Type: image/png
+Model-Name: balanced_50e_1c_2d
+
+< ./test1.png
+
+### classify request by digits model
+POST http://localhost:8080/classify
+Content-Type: image/png
+Model-Name: digits_25e_1c_1d
+
+< ./testM.png
+
+### delete model
+DELETE http://localhost:8080/model/endpointTestModel

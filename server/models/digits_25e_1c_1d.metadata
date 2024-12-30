@@ -1,0 +1,20 @@
+Epochs: 25
+Training data amount: 1000
+Batch: 1
+Input (1,28,28,1)
+Conv (1,26,26,16)
+	filtersAmount: 16
+	kernel: 3
+	stride: 1
+	padding: 0
+	learningRate: 0.001
+	activationFunction: Relu
+MaxPool (1,13,13,16)
+	poolSize: 2
+	stride: 2
+	padding: 0
+Flatten (1,1,2704,1)
+Dense (1,1,10,1)
+	neurons: 10
+	learningRate: 0.001
+	activationFunction: Relu
