@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   alphanumeric-recognizer:
     build: .
@@ -13,11 +11,3 @@ services:
       - ./data:/data
     environment:
       - SYSTEM_MODELS_LIMIT=${SYSTEM_MODELS_LIMIT}
-
-volumes:
-  data:
-  models:
-
-networks:
-  global:
-    external: false
