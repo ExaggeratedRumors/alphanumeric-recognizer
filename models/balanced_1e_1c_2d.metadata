@@ -1,9 +1,0 @@
-Epochs: 1
-Training data amount: 5
-Batch: 1
-[Input (1,28,28,1)]
-[Conv (1,26,26,16), 	Filters: 16, 	Kernel: 3, 	Stride: 1, 	Padding: 0, 	Learning rate: 0.01, 	Activation: Relu]
-[MaxPool (1,13,13,16), 	Pool size: 2, 	Stride: 2, 	Padding: 0]
-[Flatten (1,1,2704,1)]
-[Dense (1,1,128,1), 	Neurons: 128, 	Learning rate: 0.01, 	Activation: Relu]
-[Dense (1,1,47,1), 	Neurons: 47, 	Learning rate: 0.01, 	Activation: Softmax]
