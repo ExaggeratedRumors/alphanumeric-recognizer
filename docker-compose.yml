@@ -1,13 +1,24 @@
 services:
-  alphanumeric-recognizer:
-    build: .
-    container_name: alphanumeric-recognizer
-    ports:
-      - "8080:8080"
-    networks:
-      - global
-    volumes:
-      - ./models:/models
-      - ./data:/data
-    environment:
-      - SYSTEM_MODELS_LIMIT=${SYSTEM_MODELS_LIMIT}
+    alphanumeric-recognizer:
+        image: alphanumeric-recognizer-img
+        container_name: alphanumeric-recognizer
+        ports:
+            - "8080:8080"
+        networks:
+            - global
+        volumes:
+            - ./server/models:/app/models
+            - ./server/data:/app/data
+        environment:
+            - SYSTEM_MODELS_LIMIT=${SYSTEM_MODELS_LIMIT}
+            - SYSTEM_TOP_N_PREDICTIONS=${SYSTEM_TOP_N_PREDICTIONS}
+    client-demo:
+        image: client-demo-img
+        container_name: client-demo
+        ports:
+            - 80:80
+        networks:
+            - global
+networks:
+    global:
+        external: false

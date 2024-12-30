@@ -23,7 +23,20 @@ Source: <a href="https://www.kaggle.com/datasets/crawford/emnist/data">EMNIST</a
 
 Data is saved in `/data` directory.
 
-## Executing
+## Docker
+
+Make sure fat jar exists in `/build/libs` directory.
+Otherwise execute task:
+```agsl
+./gradlew shadowJar
+```
+
+1. Build image:
+```agsl
+docker build -t alphanumeric-recognizer-img .
+```
+
+## Manual executing
 
 1. Make sure your JAVA_HOME is set to JDK 20.
 2. Clone the repository:

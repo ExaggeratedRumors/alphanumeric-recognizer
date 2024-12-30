@@ -22,6 +22,6 @@ object Utils {
     /** Server **/
     const val SERVER_PORT = 8080
     const val SERVER_STOP_DELAY_SECONDS = 2
-    val MAX_MODELS_TRAINING = System.getenv().getOrDefault("MAX_MODELS_TRAINING", "3").toInt()
-    val TOP_N_PREDICTIONS = System.getenv().getOrDefault("TOP_N_PREDICTIONS", "10").toInt()
+    val MAX_MODELS_TRAINING = System.getenv().getOrDefault("SYSTEM_MAX_MODELS_TRAINING", "3").toInt()
+    val TOP_N_PREDICTIONS = System.getenv().getOrDefault("SYSTEM_TOP_N_PREDICTIONS", "10").toInt()
 }

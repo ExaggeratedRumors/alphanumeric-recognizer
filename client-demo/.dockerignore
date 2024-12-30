@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+.git
+.gitignore
+.env
+.RData
+.Rhistory
+manifest.json
+rsconnect/
+.Rproj.user
+dist
+.build
+.idea/
+*.lck

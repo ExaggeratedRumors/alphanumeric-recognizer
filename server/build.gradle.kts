@@ -23,10 +23,6 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-tasks.test {
-    maxHeapSize = "2G"
-    useJUnitPlatform()
-}
 kotlin {
     jvmToolchain(20)
 }
@@ -52,6 +48,11 @@ tasks {
 
     build {
         dependsOn(shadowJar)
+    }
+
+    test {
+        maxHeapSize = "2G"
+        useJUnitPlatform()
     }
 }
 
