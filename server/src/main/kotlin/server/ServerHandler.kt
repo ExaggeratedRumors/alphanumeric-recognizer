@@ -304,8 +304,9 @@ class ServerHandler(private val statusQueue: ArrayList<ModelStatus>): HttpHandle
         /** Predict **/
         try {
             val prediction = model.predict(imageToPrediction)
-            val label = Evaluation.valuesToLabel(prediction, Utils.TOP_N_PREDICTIONS)
-            reply(label.toString(), 200, exchange)
+            val labels = Evaluation.valuesToLabel(prediction, Utils.TOP_N_PREDICTIONS)
+            val json = ServerMapper.getMapper().writeValueAsString(labels)
+            reply(json.toString(), 200, exchange)
         } catch (e: Exception) {
             e.printStackTrace()
             reply("E: Failed to predict image.", 400, exchange)

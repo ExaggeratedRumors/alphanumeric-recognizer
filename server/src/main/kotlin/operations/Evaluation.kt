@@ -31,13 +31,13 @@ object Evaluation {
         return correct.toDouble() / trueLabels.size
     }
 
-    fun valuesToLabel(values: Array<Double>, topN: Int): List<Pair<String, String>> {
+    fun valuesToLabel(values: Array<Double>, topN: Int): Map<String, String> {
         val labels = DataLoader.loadLabels(values.indices.toList()).map {
             it.toString()
         }
         val maxLabels = labels.zip(values).sortedByDescending { it.second }
-        return maxLabels.take(topN).map {
-            Pair(it.first, "%.4f".format(Locale.ENGLISH, it.second))
+        return maxLabels.take(topN).associate {
+            it.first to "%.4f".format(Locale.ENGLISH, it.second)
         }
     }
 }

@@ -77,7 +77,7 @@ object ModelSerialization {
         val sequence = sequence {
             yield("Models amount: $modelsAmount")
             models.forEach {
-                yield(it)
+                if(it.endsWith(Utils.MODEL_EXTENSION)) yield(it.removeSuffix(".${Utils.MODEL_EXTENSION}"))
             }
             yield("\n")
             yield("Model with full info amount: $infoModelsAmount")
