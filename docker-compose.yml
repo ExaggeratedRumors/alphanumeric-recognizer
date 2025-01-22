@@ -1,5 +1,8 @@
 services:
     alphanumeric-recognizer:
+        build:
+            context: ./server
+            dockerfile: Dockerfile
         image: alphanumeric-recognizer-img
         container_name: alphanumeric-recognizer
         ports:
@@ -13,6 +16,9 @@ services:
             - SYSTEM_MODELS_LIMIT=${SYSTEM_MODELS_LIMIT}
             - SYSTEM_TOP_N_PREDICTIONS=${SYSTEM_TOP_N_PREDICTIONS}
     client-demo:
+        build:
+            context: ./client
+            dockerfile: Dockerfile
         image: client-demo-img
         container_name: client-demo
         ports:
