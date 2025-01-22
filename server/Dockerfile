@@ -17,10 +17,14 @@ RUN --mount=type=bind,source=/build/libs,target=/temp/libs \
 
 FROM openjdk:20-jdk-slim as runtime
 
-RUN apt-get update && apt-get install -y \
-    libfreetype6 \
-    fontconfig \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+	&& apt-get install --no-install-recommends -y \
+	libfreetype6 \
+	libfreetype6-dev \
+	fontconfig \
+	bash \
+	&& apt-get clean \
+	&& rm -rf /var/cache/* /var/lib/apt/lists/* /tmp/*
 
 WORKDIR /app
 
