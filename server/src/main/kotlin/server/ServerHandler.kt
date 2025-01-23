@@ -234,6 +234,7 @@ class ServerHandler(private val statusQueue: ArrayList<ModelStatus>): HttpHandle
         /** Save model **/
         try {
             ModelSerialization.save(model, trainingInfo)
+            updateStatus(status, ModelStatus.Status.TRAINING, "I: Model saved.")
         } catch (e: Exception) {
             e.printStackTrace()
             updateStatus(status, ModelStatus.Status.EMPTY, "E: Failed to save model.")
@@ -260,7 +261,7 @@ class ServerHandler(private val statusQueue: ArrayList<ModelStatus>): HttpHandle
             updateStatus(status, ModelStatus.Status.READY, "R: Test data confusion matrix:\n$testMatrix")
         } catch (e: Exception) {
             e.printStackTrace()
-            updateStatus(status, ModelStatus.Status.READY, "E: Failed to evaluate model.")
+            updateStatus(status, ModelStatus.Status.READY, "E: Failed to evaluate model. Training set or test set size may be too small to cover all labels.")
             return
         }
     }

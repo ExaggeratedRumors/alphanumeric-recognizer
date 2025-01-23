@@ -34,3 +34,8 @@ curl -L -o ~/Downloads/emnist.zip\
 ```agsl
 docker compose up
 ```
+
+## Limitations
+
+- Project does not support training with GPU acceleration.
+- If a model is trained or tested on too little data, an evaluation error may occur.

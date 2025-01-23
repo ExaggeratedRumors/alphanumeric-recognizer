@@ -25,13 +25,12 @@ Data is saved in `/data` directory.
 
 ## Docker
 
-Make sure fat jar exists in `/build/libs` directory.
-Otherwise execute task:
+1. Make sure EMNIST data is saved in `/data` directory.
+2. Make sure newest release version exists in `/build/libs` directory. You can also build version by executing task:
 ```agsl
 ./gradlew shadowJar
 ```
-
-1. Build image:
+3. Build an image:
 ```agsl
 docker build -t alphanumeric-recognizer-img .
 ```
