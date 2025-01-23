@@ -1,4 +1,4 @@
-FROM node:23-alpine as build
+FROM node:23-alpine AS build
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM nginx:alpine as runtime
+FROM nginx:alpine AS runtime
 
 COPY --from=build /app/build /usr/share/nginx/html
 

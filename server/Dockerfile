@@ -1,4 +1,4 @@
-FROM openjdk:20-jdk-slim as build
+FROM openjdk:20-jdk-slim AS build
 
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
@@ -15,7 +15,7 @@ RUN --mount=type=bind,source=/build/libs,target=/temp/libs \
 	bash -o pipefail \
 	-c "newest_release=\$(ls -v /temp/libs/alphanumeric-recognizer-*.jar | tail -n 1) && cp \"\$newest_release\" /app/app.jar"
 
-FROM openjdk:20-jdk-slim as runtime
+FROM openjdk:20-jdk-slim AS runtime
 
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y \
