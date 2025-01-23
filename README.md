@@ -23,7 +23,7 @@ Kotlin no-frameworks approach system classifying alphanumeric characters in imag
 https://github.com/ExaggeratedRumors/alphanumeric-recognizer.git
 ```
 
-2. Download <a href="https://www.kaggle.com/api/v1/datasets/download/crawford/emnist">EMNIST</a> data and unzip in `/data` directory.
+2. Download <a href="https://www.kaggle.com/api/v1/datasets/download/crawford/emnist">EMNIST</a> data and unzip in `server/data` directory.
 ```agsl
 #!/bin/bash
 curl -L -o ~/Downloads/emnist.zip\
